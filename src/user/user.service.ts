@@ -24,4 +24,8 @@ export class UserService {
     // Sauvegarde de l'utilisateur sans attendre de valeur de retour
     await this.userRepository.save(newUser);
   }
+
+  async findByEmail(email: string): Promise<User | null> {
+    return await this.userRepository.findOneBy({ email });
+  }
 }

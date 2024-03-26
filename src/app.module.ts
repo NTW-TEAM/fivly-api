@@ -8,6 +8,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User } from './user/user.entity';
 import { UserService } from "./user/user.service";
 import { DataSource } from "typeorm";
+import { DoesMailExist } from "./user/validator/email.validator";
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -29,8 +31,9 @@ import { DataSource } from "typeorm";
       }),
     }),
     UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, DoesMailExist],
 })
 export class AppModule {}
