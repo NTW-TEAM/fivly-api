@@ -27,7 +27,10 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    // remove password in payload
+    const newLastConnection: Date = new Date();
+    await this.userService.registerConnection(user.id, newLastConnection);
+    user.lastConnection = newLastConnection;
+
     const { password: _, ...result } = user;
 
     return {

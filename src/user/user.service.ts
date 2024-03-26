@@ -28,4 +28,8 @@ export class UserService {
   async findByEmail(email: string): Promise<User | null> {
     return await this.userRepository.findOneBy({ email });
   }
+
+  async registerConnection(userId: number, date: Date): Promise<void> {
+    await this.userRepository.update(userId, { lastConnection: date });
+  }
 }
