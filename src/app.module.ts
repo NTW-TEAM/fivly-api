@@ -1,18 +1,32 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User } from './user/user.entity';
-import { UserService } from "./user/user.service";
-import { DataSource } from "typeorm";
 import { DoesMailExist } from "./user/validator/email.validator";
 import { AuthModule } from './auth/auth.module';
+import { ScopeModule } from './scope/scope.module';
+import { Scope } from "./scope/scope.entity";
+import { ScopesGuard } from "./authorization/scope.guard";
+import { APP_GUARD } from "@nestjs/core";
+import { RolesModule } from './roles/roles.module';
+import { Role } from "./roles/role.entity";
+import { AuthGuard } from "./auth/auth.guard";
+import { JwtModule } from "@nestjs/jwt";
 
 @Module({
   imports: [
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        global: true,
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '2d' },
+      }),
+    }),
     ConfigModule.forRoot({
       isGlobal: true, // Rend le module disponible globalement
     }),
@@ -26,14 +40,22 @@ import { AuthModule } from './auth/auth.module';
         username: config.get('MYSQL_USER'),
         password: config.get('MYSQL_PASSWORD'),
         database: config.get('MYSQL_DATABASE'),
-        entities: [User],
+        entities: [User, Scope, Role],
         synchronize: true,
+        logging: true,
       }),
     }),
     UserModule,
     AuthModule,
+    ScopeModule,
+    RolesModule,
   ],
   controllers: [AppController],
-  providers: [AppService, DoesMailExist],
+  providers: [AppService, DoesMailExist,
+    {provide: APP_GUARD,useClass:AuthGuard}
+    ,{
+    provide: APP_GUARD,
+    useClass: ScopesGuard,
+  }],
 })
 export class AppModule {}

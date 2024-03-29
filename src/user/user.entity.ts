@@ -1,4 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Scope } from "../scope/scope.entity";
+import { Role } from "../roles/role.entity";
+import { JoinTable } from "typeorm";
 
 @Entity()
 export class User {
@@ -34,4 +37,12 @@ export class User {
 
   @Column()
   lastConnection: Date;
+
+  @ManyToMany(() => Role)
+  @JoinTable()
+  roles: Role[];
+
+  @ManyToMany(() => Scope)
+  @JoinTable()
+  scopes: Scope[];
 }
