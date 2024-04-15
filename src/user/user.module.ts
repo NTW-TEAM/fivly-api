@@ -5,10 +5,20 @@ import { User } from './user.entity';
 import { UserController } from './user.controller';
 import { DoesMailExist } from './validator/email.validator';
 import { RolesModule } from "../roles/roles.module";
+import { JwtModule, JwtService } from "@nestjs/jwt";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])
-  ,RolesModule],
+  ,RolesModule,JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        global: true,
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '2d' },
+      }),
+    }),],
   providers: [UserService, DoesMailExist],
   controllers: [UserController],
   exports: [UserService],

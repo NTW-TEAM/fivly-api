@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { CreateUserDto } from './dto/createuser.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Role } from "../roles/role.entity";
 import { RolesService } from "../roles/roles.service";
+import { UpdateUserRequest } from "./dto/updateuserrequest.dto";
 
 @Injectable()
 export class UserService {
@@ -47,5 +48,78 @@ export class UserService {
 
   async registerConnection(userId: number, date: Date): Promise<void> {
     await this.userRepository.update(userId, { lastConnection: date });
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    // returns user without password and with roles and scopes
+    return await this.userRepository.createQueryBuilder('user')
+      .select(['user.id', 'user.firstName','user.lastName', 'user.email', 'user.phoneNumber', 'user.numberAndStreet', 'user.postalCode', 'user.city', 'user.country', 'user.lastConnection'])
+      .leftJoinAndSelect('user.roles', 'role')
+      .leftJoinAndSelect('user.scopes', 'scope')
+      .getMany();
+  }
+
+  async hasScope(id: number, scope: string): Promise<boolean>
+  {
+    const user = await this.userRepository.createQueryBuilder('user')
+      .leftJoinAndSelect('user.scopes', 'scope')
+      .where('user.id = :id', { id })
+      .getOne();
+
+    if(!user) {
+      return false;
+    }
+
+    return user.scopes.some(s => s.name === scope);
+  }
+
+  async updateUser(userId: number, userUpdateRequest: UpdateUserRequest): Promise<User> {
+    // Récupère l'utilisateur à mettre à jour
+    let user = await this.getUser(userId);
+
+    if(!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    // Met à jour les propriétés de l'utilisateur
+    if (userUpdateRequest.firstName) {
+      user.firstName = userUpdateRequest.firstName;
+    }
+    if (userUpdateRequest.lastName) {
+      user.lastName = userUpdateRequest.lastName;
+    }
+    if (userUpdateRequest.email) {
+      user.email = userUpdateRequest.email;
+    }
+    if (userUpdateRequest.password) {
+      const salt = await bcrypt.genSalt();
+      user.password = await bcrypt.hash(userUpdateRequest.password, salt);
+    }
+    if (userUpdateRequest.phoneNumber) {
+      user.phoneNumber = userUpdateRequest.phoneNumber;
+    }
+    if (userUpdateRequest.numberAndStreet) {
+      user.numberAndStreet = userUpdateRequest.numberAndStreet;
+    }
+    if (userUpdateRequest.postalCode) {
+      user.postalCode = userUpdateRequest.postalCode;
+    }
+    if (userUpdateRequest.city) {
+      user.city = userUpdateRequest.city;
+    }
+    if (userUpdateRequest.country) {
+      user.country = userUpdateRequest.country;
+    }
+
+    // Sauvegarde les modifications
+    return await this.userRepository.save(user);
+  }
+
+  async getUser(userId: number): Promise<User | null> {
+    return await this.userRepository.createQueryBuilder('user')
+      .leftJoinAndSelect('user.roles', 'role')
+      .leftJoinAndSelect('user.scopes', 'scope')
+      .where('user.id = :id', { id: userId})
+      .getOne();
   }
 }

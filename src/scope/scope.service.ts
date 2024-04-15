@@ -9,7 +9,7 @@ export class ScopeService {
   constructor(
     @InjectRepository(Scope) private scopeRepository: Repository<Scope>,
   ) {}
-  async getAllScopes() {
+  async getAllScopes() : Promise<Scope[]> {
     return await this.scopeRepository.find();
   }
 

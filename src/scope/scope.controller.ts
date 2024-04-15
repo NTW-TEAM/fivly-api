@@ -1,8 +1,9 @@
-import { Body, Controller, Get, HttpStatus, Post, Res } from "@nestjs/common";
+import { Body, Controller, Get, HttpStatus, Post, Res, UseGuards } from "@nestjs/common";
 import { ScopeService } from "./scope.service";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Scope } from "./scope.entity";
 import { Response } from "express";
+import { AuthGuard } from "../auth/auth.guard";
 
 @ApiTags('scopes')
 @Controller('scopes')

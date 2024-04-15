@@ -12,4 +12,8 @@ export class CreateRoleDto {
   @IsNotEmpty({ message: 'Role description is required.' })
   @IsString({ message: 'Role description must be a string.' })
   description: string;
+  @ApiProperty({ example: ['scope1', 'scope2'], description: 'Scopes' })
+  @IsNotEmpty({ message: 'Scopes are required.' })
+  @IsString({ each: true, message: 'Scopes must be strings.' })
+  scopes: string[];
 }

@@ -39,7 +39,7 @@ export class ScopesGuard implements CanActivate {
     console.log(user.roles);
     for (const role of user.roles) {
       console.log('GETTING SCOPES FOR ROLE', role.name);
-      const roleEntity = await this.roleService.getRoleWithScopes(role.id);
+      const roleEntity = await this.roleService.getRoleWithScopes(role.name);
       if(!roleEntity) {
         throw new Error('Role not found');
       }

@@ -4,9 +4,10 @@ import { RolesController } from './roles.controller';
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Role } from "./role.entity";
 import { DoesRoleNameExist } from "./validator/rolename.validator";
+import { Scope } from "../scope/scope.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Role])],
+  imports: [TypeOrmModule.forFeature([Role]),TypeOrmModule.forFeature([Scope])],
   providers: [RolesService, DoesRoleNameExist],
   controllers: [RolesController],
   exports: [RolesService],

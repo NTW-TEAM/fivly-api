@@ -1,12 +1,10 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "../user/user.entity";
 import { Scope } from "../scope/scope.entity";
 
 @Entity()
 export class Role {
-  @PrimaryGeneratedColumn()
-  id: number;
-  @Column({ unique: true})
+  @PrimaryColumn()
   name: string;
   @Column()
   description: string;
