@@ -1,8 +1,7 @@
 import { SetMetadata } from '@nestjs/common';
 
 export enum Scope {
-  ROLES_CREATE = 'roles:create',
-  ROLES_DELETE = 'roles:delete',
+  ROLES_MANAGE = 'roles:manage',
   UPDATE_USER = 'user:update',
 }
 

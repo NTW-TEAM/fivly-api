@@ -5,11 +5,15 @@ import { In, Repository } from "typeorm";
 import { CreateRoleDto } from "./dto/createrole.dto";
 import { Scope } from "../scope/scope.entity";
 import { NotFoundError } from "rxjs";
+import { UpdateScopesDTO } from "../user/update.scopes.dto";
+import { User } from "../user/user.entity";
+import { ScopeService } from "../scope/scope.service";
 
 @Injectable()
 export class RolesService {
   constructor(@InjectRepository(Role) private roleRepository: Repository<Role>,
-              @InjectRepository(Scope) private scopeRepository: Repository<Scope>) {}
+              @InjectRepository(Scope) private scopeRepository: Repository<Scope>,
+              private scopeService: ScopeService) {}
 
   async getAllRoles(): Promise<Role[]> {
     return await this.roleRepository.find();
@@ -53,4 +57,31 @@ export class RolesService {
     }
     await this.roleRepository.delete({ name: name });
   }
+
+  async updateRoleScopes(roleName: string, updateRoleScopesDto: UpdateScopesDTO): Promise<Role> {
+    const scopes: string[] = updateRoleScopesDto.scopes;
+
+    // Récupère le rôle à mettre à jour
+    let role = await this.findByName(roleName);
+
+    if(!role) {
+      throw new HttpException('Role not found', HttpStatus.NOT_FOUND);
+    }
+
+    // Remplace les scopes du rôle
+    role.scopes = [];
+    for (const scope of scopes) {
+      // Récupération de l'entity scope
+      let scopeEntity = await this.scopeService.findByName(scope);
+      if(!scopeEntity) {
+        throw new HttpException(`Scope ${scope} not found`, HttpStatus.NOT_FOUND);
+      }
+      role.scopes.push(scopeEntity);
+    }
+
+    // Sauvegarde les modifications
+    return await this.roleRepository.save(role);
+  }
+
+
 }
