@@ -7,7 +7,7 @@ import { DoesMailExist } from './validator/email.validator';
 import { RolesModule } from "../roles/roles.module";
 import { JwtModule, JwtService } from "@nestjs/jwt";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-
+import { ScopeModule } from "../scope/scope.module";
 @Module({
   imports: [TypeOrmModule.forFeature([User])
   ,RolesModule,JwtModule.registerAsync({
@@ -18,7 +18,9 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
         secret: configService.get<string>('JWT_SECRET'),
         signOptions: { expiresIn: '2d' },
       }),
-    }),],
+    })
+  ,
+  ScopeModule],
   providers: [UserService, DoesMailExist],
   controllers: [UserController],
   exports: [UserService],

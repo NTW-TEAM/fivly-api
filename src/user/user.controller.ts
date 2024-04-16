@@ -1,12 +1,12 @@
-import { Body, Controller, Get, HttpCode, HttpException, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpException, Param, Patch, Post, Put, UseGuards } from "@nestjs/common";
 import { CreateUserDto } from './dto/createuser.dto';
 import { UserService } from './user.service';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from "./user.entity";
-import { AuthGuard } from "../auth/auth.guard";
 import { SelfUserGuard } from "./self.user.guard";
 import { UpdateUserRequest } from "./dto/updateuserrequest.dto";
 import { JwtService } from "@nestjs/jwt";
+import { UpdateScopesDTO } from "./update.scopes.dto";
 
 @ApiTags('users')
 @Controller('users')
@@ -47,6 +47,15 @@ export class UserController {
     };
   }
 
+  @Put(':userId/scopes')
+  @ApiResponse({
+    status: 200,
+    description: 'The user scopes have been updated.'
+  })
+  async updateUserScopes(@Param("userId") userId: number, @Body() updateScopesDTO: UpdateScopesDTO): Promise<User> {
+    return await this.userService.updateUserScopes(userId, updateScopesDTO);
+  }
+
   @Get(':userId')
   @ApiResponse({
     status: 200,
@@ -62,5 +71,23 @@ export class UserController {
     const { password: _, ...result } = user;
 
     return result;
+  }
+
+  @Put(':userId/roles/:roleName')
+  @ApiResponse({
+    status: 200,
+    description: 'The role has been added to the user.'
+  })
+  async addRoleToUser(@Param("userId") userId: number, @Param("roleName") roleName: string) {
+    return await this.userService.addRoleToUser(userId, roleName);
+  }
+
+  @Delete(':userId/roles/:roleName')
+  @ApiResponse({
+    status: 200,
+    description: 'The role has been removed from the user.'
+  })
+  async removeRoleFromUser(@Param("userId") userId: number, @Param("roleName") roleName: string) {
+    return await this.userService.removeRoleFromUser(userId, roleName);
   }
 }

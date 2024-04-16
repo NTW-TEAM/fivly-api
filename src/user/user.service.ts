@@ -7,12 +7,15 @@ import * as bcrypt from 'bcrypt';
 import { Role } from "../roles/role.entity";
 import { RolesService } from "../roles/roles.service";
 import { UpdateUserRequest } from "./dto/updateuserrequest.dto";
+import { ScopeService } from "../scope/scope.service";
+import { UpdateScopesDTO } from "./update.scopes.dto";
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     private roleService: RolesService,
+    private scopeService: ScopeService
   ) {}
 
   async registerUser(createUserDto: CreateUserDto): Promise<void> {
@@ -121,5 +124,82 @@ export class UserService {
       .leftJoinAndSelect('user.scopes', 'scope')
       .where('user.id = :id', { id: userId})
       .getOne();
+  }
+
+  async updateUserScopes(userId: number, updateScopesDTO: UpdateScopesDTO): Promise<User> {
+    const scopes: string[] = updateScopesDTO.scopes;
+
+    // Récupère l'utilisateur à mettre à jour
+    let user = await this.getUser(userId);
+
+    if(!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    // Remplace les scopes de l'utilisateur
+    user.scopes = [];
+    for (const scope of scopes) {
+      // Récupération de l'entity scope
+      let scopeEntity = await this.scopeService.findByName(scope);
+      if(!scopeEntity) {
+        throw new HttpException(`Scope ${scope} not found`, HttpStatus.NOT_FOUND);
+      }
+      user.scopes.push(scopeEntity);
+    }
+
+    // Sauvegarde les modifications
+    return await this.userRepository.save(user);
+  }
+
+  async addRoleToUser(userId: number, roleName: string) {
+    // Récupère l'utilisateur à mettre à jour
+    let user = await this.getUser(userId);
+
+    if(!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    // Vérifie si l'utilisateur a déjà le rôle
+    if(user.roles.some(r => r.name === roleName)) {
+      throw new HttpException(`User already has role ${roleName}`, HttpStatus.BAD_REQUEST);
+    }
+
+    // Récupère le rôle à ajouter
+    let role = await this.roleService.findByName(roleName);
+    if(!role) {
+      throw new HttpException(`Role ${roleName} not found`, HttpStatus.NOT_FOUND);
+    }
+
+    // Ajoute le rôle à l'utilisateur
+    user.roles.push(role);
+
+    // Sauvegarde les modifications
+    return await this.userRepository.save(user);
+  }
+
+  async removeRoleFromUser(userId: number, roleName: string) {
+    // Récupère l'utilisateur à mettre à jour
+    let user = await this.getUser(userId);
+
+    if(!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    // Vérifie si l'utilisateur a le rôle à retirer
+    if(!user.roles.some(r => r.name === roleName)) {
+      throw new HttpException(`User does not have role ${roleName}`, HttpStatus.BAD_REQUEST);
+    }
+
+    // Récupère le rôle à retirer
+    let role = await this.roleService.findByName(roleName);
+    if(!role) {
+      throw new HttpException(`Role ${roleName} not found`, HttpStatus.NOT_FOUND);
+    }
+
+    // Retire le rôle de l'utilisateur
+    user.roles = user.roles.filter(r => r.name !== roleName);
+
+    // Sauvegarde les modifications
+    return await this.userRepository.save(user);
   }
 }
