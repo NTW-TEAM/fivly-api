@@ -17,72 +17,73 @@ import { DoesMailExist } from "../validator/email.validator";
  */
 export class UpdateUserRequest {
 
-  @ApiProperty({ example: 'John', description: 'The first name of the user' })
-  @IsString({ message: 'First name must be a string.' })
+  @ApiProperty({ example: "John", description: "The first name of the user", required: false })
+  @IsString({ message: "First name must be a string." })
   @IsOptional()
   firstName?: string;
 
-  @ApiProperty({ example: 'DOE', description: 'The last name of the user' })
-  @IsString({ message: 'Last name must be a string.' })
+  @ApiProperty({ example: "DOE", description: "The last name of the user", required: false })
+  @IsString({ message: "Last name must be a string." })
   @IsOptional()
   lastName?: string;
 
   @ApiProperty({
-    example: 'email@email.com',
-    description: 'The email of the user',
+    example: "email@email.com",
+    description: "The email of the user",
+    required: false
   })
-  @IsEmail({}, { message: 'Email must be a valid email address.' })
+  @IsEmail({}, { message: "Email must be a valid email address." })
   @IsOptional()
   @Validate(DoesMailExist)
   email?: string;
 
   @ApiProperty({
-    example: 'qfcqfz6f2q46Dzv15',
-    description: 'The password (clear) of the user',
+    example: "qfcqfz6f2q46Dzv15",
+    description: "The password (clear) of the user", required: false
   })
   @Length(8, 32, {
-    message: 'Password must be between 8 and 32 characters long.',
+    message: "Password must be between 8 and 32 characters long."
   })
   @IsOptional()
   password?: string;
 
   @ApiProperty({
-    example: '0782809628',
-    description: 'The phone number of the user',
-    required: false,
+    example: "0782809628",
+    description: "The phone number of the user",
+    required: false
   })
-  @IsString({ message: 'Phone number must be a string.' })
-  @Length(10, 10, { message: 'Phone number must be 10 characters long.' })
+  @IsString({ message: "Phone number must be a string." })
+  @Length(10, 10, { message: "Phone number must be 10 characters long." })
   @IsOptional()
   phoneNumber?: string;
 
   @ApiProperty({
-    example: '1 rue de la paix',
-    description: 'The number and the street of the user',
+    example: "1 rue de la paix",
+    description: "The number and the street of the user", required: false
   })
-  @IsString({ message: 'Number and street must be a string.' })
+  @IsString({ message: "Number and street must be a string." })
   @IsOptional()
   numberAndStreet?: string;
 
-  @ApiProperty({ example: '75016', description: 'The postal code of the user' })
-  @IsString({ message: 'Postal code must be a string.' })
-  @Length(5, 5, { message: 'Postal code must be 5 characters long.' })
+  @ApiProperty({ example: "75016", description: "The postal code of the user", required: false })
+  @IsString({ message: "Postal code must be a string." })
+  @Length(5, 5, { message: "Postal code must be 5 characters long." })
   @IsOptional()
   postalCode?: string;
 
-  @ApiProperty({ example: 'Paris', description: 'The city of the user' })
-  @IsString({ message: 'City must be a string.' })
+  @ApiProperty({ example: "Paris", description: "The city of the user", required: false })
+  @IsString({ message: "City must be a string." })
   @IsOptional()
   city?: string;
 
-  @ApiProperty({ example: 'France', description: 'The country of the user' })
-  @IsString({ message: 'Country must be a string.' })
+  @ApiProperty({ example: "France", description: "The country of the user", required: false })
+  @IsString({ message: "Country must be a string." })
   @IsOptional()
   country?: string;
 
-  @ApiProperty({ example: true, description: 'Is user is enabled.' })
+  @ApiProperty({ example: true, description: "Is user is enabled.", required: false })
   @IsOptional()
-  @IsBoolean({ message: 'isActive must be a boolean.' })
+  @IsBoolean({ message: "isActive must be a boolean." })
   isActive?: boolean;
 
 }
