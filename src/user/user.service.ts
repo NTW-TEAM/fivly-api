@@ -122,6 +122,9 @@ export class UserService {
     if (userUpdateRequest.country) {
       user.country = userUpdateRequest.country;
     }
+    if(userUpdateRequest.isActive !== undefined) {
+      user.isActive = userUpdateRequest.isActive;
+    }
 
     // Sauvegarde les modifications
     return await this.userRepository.save(user);

@@ -18,13 +18,13 @@ export class AuthService {
     const user = await this.userService.findByEmail(email);
 
     if (!user) {
-      throw new HttpException('User not found', 404);
+      throw new HttpException('Invalid credentials.', 404);
     }
     // compare password with bcrypt
     const isPasswordMatching = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatching) {
-      throw new UnauthorizedException();
+      throw new HttpException('Invalid credentials.', 404);
     }
 
     const newLastConnection: Date = new Date();
