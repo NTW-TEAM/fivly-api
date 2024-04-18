@@ -8,9 +8,12 @@ import { RolesModule } from "../roles/roles.module";
 import { JwtModule, JwtService } from "@nestjs/jwt";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ScopeModule } from "../scope/scope.module";
+import { Membership } from "../membership/membership.entity";
 @Module({
-  imports: [TypeOrmModule.forFeature([User])
-  ,RolesModule,JwtModule.registerAsync({
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([Membership]),
+    RolesModule,JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({

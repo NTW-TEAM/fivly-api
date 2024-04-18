@@ -15,6 +15,8 @@ import { RolesModule } from './roles/roles.module';
 import { Role } from "./roles/role.entity";
 import { AuthGuard } from "./auth/auth.guard";
 import { JwtModule } from "@nestjs/jwt";
+import { MembershipModule } from './membership/membership.module';
+import { Membership } from "./membership/membership.entity";
 
 @Module({
   imports: [
@@ -40,7 +42,7 @@ import { JwtModule } from "@nestjs/jwt";
         username: config.get('MYSQL_USER'),
         password: config.get('MYSQL_PASSWORD'),
         database: config.get('MYSQL_DATABASE'),
-        entities: [User, Scope, Role],
+        entities: [User, Scope, Role, Membership],
         synchronize: true,
         logging: true,
       }),
@@ -49,6 +51,7 @@ import { JwtModule } from "@nestjs/jwt";
     AuthModule,
     ScopeModule,
     RolesModule,
+    MembershipModule,
   ],
   controllers: [AppController],
   providers: [AppService, DoesMailExist,

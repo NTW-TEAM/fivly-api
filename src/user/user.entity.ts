@@ -2,6 +2,7 @@ import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "t
 import { Scope } from "../scope/scope.entity";
 import { Role } from "../roles/role.entity";
 import { JoinTable } from "typeorm";
+import { Membership } from "../membership/membership.entity";
 
 @Entity()
 export class User {
@@ -38,6 +39,9 @@ export class User {
   @Column()
   lastConnection: Date;
 
+  @Column()
+  isActive: boolean;
+
   @ManyToMany(() => Role)
   @JoinTable()
   roles: Role[];
@@ -45,4 +49,7 @@ export class User {
   @ManyToMany(() => Scope)
   @JoinTable()
   scopes: Scope[];
+
+  @OneToMany(() => Membership, membership => membership.user)
+  memberships: Membership[];
 }

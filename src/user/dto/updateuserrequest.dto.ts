@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsOptional, IsString, Length, Validate } from "class-validator";
+import { IsBoolean, IsEmail, IsOptional, IsString, Length, Validate } from "class-validator";
 import { DoesMailExist } from "../validator/email.validator";
 
 /**
@@ -79,5 +79,10 @@ export class UpdateUserRequest {
   @IsString({ message: 'Country must be a string.' })
   @IsOptional()
   country?: string;
+
+  @ApiProperty({ example: true, description: 'Is user is enabled.' })
+  @IsOptional()
+  @IsBoolean({ message: 'isActive must be a boolean.' })
+  isActive?: boolean;
 
 }

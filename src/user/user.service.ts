@@ -4,16 +4,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { Role } from "../roles/role.entity";
 import { RolesService } from "../roles/roles.service";
 import { UpdateUserRequest } from "./dto/updateuserrequest.dto";
 import { ScopeService } from "../scope/scope.service";
 import { UpdateScopesDTO } from "./update.scopes.dto";
+import { Membership } from "../membership/membership.entity";
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(Membership) private membershipRepository: Repository<Membership>,
     private roleService: RolesService,
     private scopeService: ScopeService
   ) {}
@@ -27,6 +28,7 @@ export class UserService {
 
     // Définition de la date et heure actuelles pour lastConnection
     newUser.lastConnection = new Date();
+    newUser.isActive = true;
 
     // Trouve le rôle "member" et l'attribue au nouvel utilisateur
     const memberRole = await this.roleService.findByName('member');
@@ -38,7 +40,14 @@ export class UserService {
     }
 
     // Sauvegarde de l'utilisateur sans attendre de valeur de retour
-    await this.userRepository.save(newUser);
+    const user: User = await this.userRepository.save(newUser);
+
+    // creation du membership du user
+    const membership = new Membership();
+    membership.user = user;
+    membership.membershipDate = new Date();
+
+    await this.membershipRepository.save(membership);
   }
 
   async findByEmail(email: string): Promise<User | null> {
