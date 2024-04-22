@@ -2,7 +2,7 @@ import { SetMetadata } from '@nestjs/common';
 
 export enum Scope {
   ROLES_MANAGE = 'roles:manage',
-  UPDATE_USER = 'user:update',
+  UPDATE_USER = 'user:manage',
   SUPER_ADMIN = 'super:admin',
 }
 

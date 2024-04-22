@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from "@nestjs/common";
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { InjectConnection, InjectDataSource, TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User } from './user/user.entity';
 import { DoesMailExist } from "./user/validator/email.validator";
@@ -17,6 +17,9 @@ import { AuthGuard } from "./auth/auth.guard";
 import { JwtModule } from "@nestjs/jwt";
 import { MembershipModule } from './membership/membership.module';
 import { Membership } from "./membership/membership.entity";
+import { DataSource } from "typeorm";
+import { runSeeder } from "typeorm-extension";
+import SetupSeeder from "../seeders/setup.seed";
 
 @Module({
   imports: [
@@ -45,7 +48,7 @@ import { Membership } from "./membership/membership.entity";
         entities: [User, Scope, Role, Membership],
         synchronize: config.get('SYNCHRONIZED_DATABASE'),
         logging: config.get('LOGGING_DATABASE'),
-        migrations: [__dirname + '/migrations/*{.ts,.js}'],
+        seeds: ['seeders/*.seed.ts'],
       }),
     }),
     UserModule,
@@ -62,4 +65,11 @@ import { Membership } from "./membership/membership.entity";
     useClass: ScopesGuard,
   }],
 })
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  constructor(@InjectDataSource() private dataSource: DataSource) {}
+
+  async onModuleInit() {
+    await runSeeder(this.dataSource, SetupSeeder);
+  }
+
+}
