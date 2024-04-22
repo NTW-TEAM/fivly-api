@@ -7,7 +7,7 @@ import * as bcrypt from 'bcrypt';
 import { RolesService } from "../roles/roles.service";
 import { UpdateUserRequest } from "./dto/updateuserrequest.dto";
 import { ScopeService } from "../scope/scope.service";
-import { UpdateScopesDTO } from "./update.scopes.dto";
+import { UpdateScopesDTO } from "./dto/update.scopes.dto";
 import { Membership } from "../membership/membership.entity";
 
 @Injectable()

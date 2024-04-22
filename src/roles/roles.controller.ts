@@ -16,7 +16,7 @@ import { RolesService } from "./roles.service";
 import { ApiResponse } from "@nestjs/swagger";
 import { Scope, Scopes } from "../authorization/scope.decorator";
 import { AuthGuard } from "../auth/auth.guard";
-import { UpdateScopesDTO } from "../user/update.scopes.dto";
+import { UpdateScopesDTO } from "../user/dto/update.scopes.dto";
 import { Role } from "./role.entity";
 
 @Controller('roles')
@@ -60,7 +60,7 @@ export class RolesController {
     description: 'The role scopes have been updated.'
   })
   @Scopes(Scope.ROLES_MANAGE)
-  async updateRoleScopes(@Param("roleName") roleName: string, @Body("scopes") updateRoleScopesDto: UpdateScopesDTO): Promise<Role> {
+  async updateRoleScopes(@Param("roleName") roleName: string, @Body() updateRoleScopesDto: UpdateScopesDTO): Promise<Role> {
     return await this.rolesService.updateRoleScopes(roleName, updateRoleScopesDto);
   }
 

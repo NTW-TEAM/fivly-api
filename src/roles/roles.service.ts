@@ -5,7 +5,7 @@ import { In, Repository } from "typeorm";
 import { CreateRoleDto } from "./dto/createrole.dto";
 import { Scope } from "../scope/scope.entity";
 import { NotFoundError } from "rxjs";
-import { UpdateScopesDTO } from "../user/update.scopes.dto";
+import { UpdateScopesDTO } from "../user/dto/update.scopes.dto";
 import { User } from "../user/user.entity";
 import { ScopeService } from "../scope/scope.service";
 

@@ -6,7 +6,7 @@ import { User } from "./user.entity";
 import { SelfUserGuard } from "./self.user.guard";
 import { UpdateUserRequest } from "./dto/updateuserrequest.dto";
 import { JwtService } from "@nestjs/jwt";
-import { UpdateScopesDTO } from "./update.scopes.dto";
+import { UpdateScopesDTO } from "./dto/update.scopes.dto";
 
 @ApiTags('users')
 @Controller('users')
