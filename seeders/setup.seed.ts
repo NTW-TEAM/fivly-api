@@ -15,7 +15,7 @@ export default class SetupSeeder implements Seeder {
     factoryManager: SeederFactoryManager
   ): Promise<any> {
     const count = await dataSource.query(`SELECT COUNT(*) FROM role`);
-    if (count[0]['COUNT(*)'] !== 0)
+    if (count[0]['COUNT(*)'] != 0)
       return;
     await dataSource.query(getRequiredEnvVar('SQL_INSERT_ROLE_MEMBER'));
     await dataSource.query(getRequiredEnvVar('SQL_INSERT_ROLE_ADMIN'));
