@@ -19,7 +19,10 @@ import { MembershipModule } from './membership/membership.module';
 import { Membership } from "./membership/membership.entity";
 import { DataSource } from "typeorm";
 import { runSeeder } from "typeorm-extension";
+import { ActivityModule } from './activity/activity.module';
 import SetupSeeder from "../seeders/setup.seed";
+import { ActivityType } from "./activitytypes/activitytype.entity";
+import { ActivityTypesModule } from "./activitytypes/activitytypes.module";
 
 @Module({
   imports: [
@@ -45,7 +48,7 @@ import SetupSeeder from "../seeders/setup.seed";
         username: config.get('MYSQL_USER'),
         password: config.get('MYSQL_PASSWORD'),
         database: config.get('MYSQL_DATABASE'),
-        entities: [User, Scope, Role, Membership],
+        entities: [User, Scope, Role, Membership, ActivityType],
         synchronize: config.get('SYNCHRONIZED_DATABASE'),
         logging: config.get('LOGGING_DATABASE'),
         seeds: ['seeders/*.seed.ts'],
@@ -56,6 +59,8 @@ import SetupSeeder from "../seeders/setup.seed";
     ScopeModule,
     RolesModule,
     MembershipModule,
+    ActivityTypesModule,
+    ActivityModule,
   ],
   controllers: [AppController],
   providers: [AppService, DoesMailExist,
