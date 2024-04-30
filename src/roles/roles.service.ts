@@ -16,7 +16,10 @@ export class RolesService {
               private scopeService: ScopeService) {}
 
   async getAllRoles(): Promise<Role[]> {
-    return await this.roleRepository.find();
+    // find roles with scopes
+    return await this.roleRepository.createQueryBuilder('role')
+      .leftJoinAndSelect('role.scopes', 'scope')
+      .getMany();
   }
 
   async findByName(name: string): Promise<Role | null> {
