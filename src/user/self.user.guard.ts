@@ -13,6 +13,12 @@ export class SelfUserGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
+    const isAdministrator: boolean = await this.userService.hasScope(request["user"].id, Scope.SUPER_ADMIN);
+
+    if(isAdministrator) {
+      return true;
+    }
+
     // check if the user has the scope to update another user
     const hasScope: boolean = await this.userService.hasScope(request["user"].id, Scope.UPDATE_USER);
 

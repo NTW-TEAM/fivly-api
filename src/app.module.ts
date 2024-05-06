@@ -22,6 +22,7 @@ import { runSeeder } from "typeorm-extension";
 import { ActivityModule } from './activity/activity.module';
 import SetupSeeder from "../seeders/setup.seed";
 import { ActivityType } from "./activitytypes/activitytype.entity";
+import { Activity } from "./activity/activity.entity";
 import { ActivityTypesModule } from "./activitytypes/activitytypes.module";
 
 @Module({
@@ -43,12 +44,13 @@ import { ActivityTypesModule } from "./activitytypes/activitytypes.module";
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         type: 'mysql',
+        timezone: 'Z',
         host: config.get('MYSQL_HOST'),
         port: +config.get('MYSQL_PORT'), // Le "+" convertit le port en nombre
         username: config.get('MYSQL_USER'),
         password: config.get('MYSQL_PASSWORD'),
         database: config.get('MYSQL_DATABASE'),
-        entities: [User, Scope, Role, Membership, ActivityType],
+        entities: [User, Scope, Role, Membership, ActivityType, Activity],
         synchronize: config.get('SYNCHRONIZED_DATABASE'),
         logging: config.get('LOGGING_DATABASE'),
         seeds: ['seeders/*.seed.ts'],

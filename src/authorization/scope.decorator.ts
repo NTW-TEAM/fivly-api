@@ -4,6 +4,7 @@ export enum Scope {
   ROLES_MANAGE = 'roles:manage',
   UPDATE_USER = 'user:manage',
   SUPER_ADMIN = 'super:admin',
+  ACTIVITIES_MANAGE = 'activities:manage',
 }
 
 export const SCOPES_KEY = 'scopes';

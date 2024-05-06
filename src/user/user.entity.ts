@@ -3,6 +3,7 @@ import { Scope } from "../scope/scope.entity";
 import { Role } from "../roles/role.entity";
 import { JoinTable } from "typeorm";
 import { Membership } from "../membership/membership.entity";
+import { Activity } from "../activity/activity.entity";
 
 @Entity()
 export class User {
@@ -52,4 +53,10 @@ export class User {
 
   @OneToMany(() => Membership, membership => membership.user)
   memberships: Membership[];
+
+  @OneToMany(() => Activity, activity => activity.owner)
+  ownedActivities: Activity[];
+
+  @ManyToMany(() => Activity, activity => activity.participants)
+  participatingActivities: Activity[];
 }
