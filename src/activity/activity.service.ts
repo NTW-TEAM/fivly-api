@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { Activity } from "./activity.entity";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -97,10 +97,18 @@ export class ActivityService {
 
 
   async registerUserToActivity(activityId: number, userId: number) {
-    const activity = await this.activityRepository.findOneBy({ id: activityId });
+    const activity = await this.activityRepository.findOne({
+      where:{id: activityId },
+    relations: ['participants'] });
 
     if (!activity) {
       throw new BadRequestException('Activity not found');
+    }
+    console.log(activity.participants)
+
+    // if user is already registered, throw an error
+    if (activity.participants.some(p => p.id == userId)) {
+      throw new ConflictException('User already registered');
     }
 
     const user = await this.userRepository.findOneBy({ id: userId });
@@ -114,10 +122,17 @@ export class ActivityService {
   }
 
   async unregisterUserFromActivity(activityId: number, userId: number) {
-    const activity = await this.activityRepository.findOneBy({ id: activityId });
+    const activity = await this.activityRepository.findOne({
+      where:{id: activityId },
+      relations: ['participants'] });
 
     if (!activity) {
       throw new BadRequestException('Activity not found');
+    }
+
+    // if user is not registered, throw an error
+    if (!activity.participants.some(p => p.id == userId)) {
+      throw new NotFoundException('User not registered');
     }
 
     const user = await this.userRepository.findOneBy({ id: userId });
