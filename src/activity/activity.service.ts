@@ -6,6 +6,7 @@ import { SearchActivityDTO } from "./dto/searchactivity.dto";
 import { CreateActivityDTO } from "./dto/createactivity.dto";
 import { ActivityType } from "../activitytypes/activitytype.entity";
 import { User } from "../user/user.entity";
+import { UpdateActivityDTO } from "./dto/updateactivity.dto";
 
 @Injectable()
 export class ActivityService {
@@ -14,6 +15,50 @@ export class ActivityService {
     @InjectRepository(ActivityType) private activityTypeRepository: Repository<ActivityType>,
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Activity) private activityRepository: Repository<Activity>) {
+  }
+
+
+  async getById(id: number): Promise<Activity|null> {
+    return await this.activityRepository.findOne({
+      where: { id: id },
+      relations: ['participants']
+    });
+  }
+
+  async update(id: number, updateActivityDTO: UpdateActivityDTO): Promise<void> {
+    // if update dto is empty
+    if (Object.keys(updateActivityDTO).length === 0) {
+      throw new BadRequestException('No data provided');
+    }
+
+    const activity = await this.activityRepository.findOneBy({ id });
+    if (!activity) {
+      throw new NotFoundException('Activity not found');
+    }
+
+    const activityType = await this.activityTypeRepository.findOneBy({ name: updateActivityDTO.activityType });
+    if (!activityType) {
+      throw new BadRequestException('Activity type not found');
+    }
+
+    const owner = await this.userRepository.findOneBy({ id: updateActivityDTO.owner });
+    if (!owner) {
+      throw new BadRequestException('Owner not found');
+    }
+
+    await this.activityRepository.update(id, {
+      ...updateActivityDTO,
+      activityType,
+      owner,
+    });
+  }
+
+  async delete(id: number): Promise<void> {
+    const activity = await this.activityRepository.findOneBy({ id });
+    if (!activity) {
+      throw new NotFoundException('Activity not found');
+    }
+    await this.activityRepository.remove(activity);
   }
 
   async search(searchActivityDto: SearchActivityDTO): Promise<Activity[]> {
