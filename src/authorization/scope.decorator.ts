@@ -5,6 +5,7 @@ export enum Scope {
   UPDATE_USER = 'user:manage',
   SUPER_ADMIN = 'super:admin',
   ACTIVITIES_MANAGE = 'activities:manage',
+  LOCALS_MANAGE = 'locals:manage',
 }
 
 export const SCOPES_KEY = 'scopes';
