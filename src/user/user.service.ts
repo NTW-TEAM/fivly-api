@@ -3,7 +3,7 @@ import { CreateUserDto } from './dto/createuser.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { RolesService } from "../roles/roles.service";
 import { UpdateUserRequest } from "./dto/updateuserrequest.dto";
 import { ScopeService } from "../scope/scope.service";

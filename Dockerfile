@@ -1,5 +1,5 @@
 # Base image
-FROM node:20-alpine
+FROM node:20-bullseye-slim
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -14,10 +14,13 @@ RUN npm install
 COPY . .
 
 # Copy the .env
-COPY .env ./
+COPY .env.prod ./.env
 
 # Creates a "dist" folder with the production build
 RUN npm run build
+
+# Verify the content of the dist directory
+RUN ls -la dist
 
 # Expose the port on which the app will run
 EXPOSE 3189

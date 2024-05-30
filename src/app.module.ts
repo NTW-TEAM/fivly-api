@@ -49,7 +49,7 @@ import { JavaAppModule } from './download/javaApp.module';
         type: 'mysql',
         timezone: 'Z',
         host: config.get('MYSQL_HOST'),
-        port: +config.get('MYSQL_PORT'), // Le "+" convertit le port en nombre
+        port: 3306, // Le "+" convertit le port en nombre
         username: config.get('MYSQL_USER'),
         password: config.get('MYSQL_PASSWORD'),
         database: config.get('MYSQL_DATABASE'),
