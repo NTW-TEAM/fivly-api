@@ -26,6 +26,7 @@ import { Activity } from "./activity/activity.entity";
 import { ActivityTypesModule } from "./activitytypes/activitytypes.module";
 import { LocalsModule } from './locals/locals.module';
 import { Local } from "./locals/local.entity";
+import { JavaAppModule } from './download/javaApp.module';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { Local } from "./locals/local.entity";
     ActivityTypesModule,
     ActivityModule,
     LocalsModule,
+    JavaAppModule,
   ],
   controllers: [AppController],
   providers: [AppService, DoesMailExist,
