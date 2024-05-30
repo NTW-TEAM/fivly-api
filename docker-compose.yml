@@ -3,7 +3,7 @@ services:
   fivly-api:
     build: .
     ports:
-      - "${API_PORT}:3189"
+      - "${API_PORT}:3000"
     volumes:
       - .:/app
     depends_on:
@@ -15,6 +15,7 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     networks:
       - fivly-network
+      - proxiable
     restart: unless-stopped
 
   fivly-mysql:
@@ -40,6 +41,7 @@ services:
       PMA_HOST: fivly-mysql
     networks:
       - fivly-network
+      - proxiable
 
 volumes:
   fivly-data:
@@ -47,3 +49,5 @@ volumes:
 
 networks:
   fivly-network:
+  proxiable:
+    external: true

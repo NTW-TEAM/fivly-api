@@ -23,7 +23,7 @@ RUN npm run build
 RUN ls -la dist
 
 # Expose the port on which the app will run
-EXPOSE 3189
+EXPOSE 3000
 
 # Start the server using the production build
 CMD ["npm", "run", "start:prod"]
