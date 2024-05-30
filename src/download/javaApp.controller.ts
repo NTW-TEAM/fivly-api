@@ -12,7 +12,7 @@ export class JavaAppController {
   private readonly storagePath = process.env.JARS_DIRECTORY || join(__dirname, '..', '..', 'jars');
   constructor(private readonly downloadService: JavaAppService) {}
 
-  @Get('downloadLastUpdate')
+  @Get('download')
   downloadLastUpdate(@Res() res: Response): void {
     const latestJar = this.downloadService.getLatestVersion();
     const filePath = join(this.storagePath, latestJar);
