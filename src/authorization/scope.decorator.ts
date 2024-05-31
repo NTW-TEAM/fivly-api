@@ -6,6 +6,7 @@ export enum Scope {
   SUPER_ADMIN = 'super:admin',
   ACTIVITIES_MANAGE = 'activities:manage',
   LOCALS_MANAGE = 'locals:manage',
+  ASSEMBLIES_MANAGE = 'assemblies:manage',
 }
 
 export const SCOPES_KEY = 'scopes';

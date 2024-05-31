@@ -27,6 +27,8 @@ import { ActivityTypesModule } from "./activitytypes/activitytypes.module";
 import { LocalsModule } from './locals/locals.module';
 import { Local } from "./locals/local.entity";
 import { JavaAppModule } from './download/javaApp.module';
+import { AssemblyModule } from './assembly/assembly.module';
+import { Assembly } from "./assembly/assembly.entity";
 
 @Module({
   imports: [
@@ -53,7 +55,7 @@ import { JavaAppModule } from './download/javaApp.module';
         username: config.get('MYSQL_USER'),
         password: config.get('MYSQL_PASSWORD'),
         database: config.get('MYSQL_DATABASE'),
-        entities: [User, Scope, Role, Membership, ActivityType, Activity, Local],
+        entities: [User, Scope, Role, Membership, ActivityType, Activity, Local, Assembly],
         synchronize: config.get('SYNCHRONIZED_DATABASE'),
         logging: config.get('LOGGING_DATABASE'),
         seeds: ['seeders/*.seed.ts'],
@@ -68,6 +70,7 @@ import { JavaAppModule } from './download/javaApp.module';
     ActivityModule,
     LocalsModule,
     JavaAppModule,
+    AssemblyModule,
   ],
   controllers: [AppController],
   providers: [AppService, DoesMailExist,
