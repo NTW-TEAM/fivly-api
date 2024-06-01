@@ -1,5 +1,6 @@
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "../user/user.entity";
+import { VoteSession } from "./votesession.entity";
 
 @Entity()
 export class Assembly {
@@ -26,5 +27,8 @@ export class Assembly {
 
   @ManyToMany(() => User, user => user.participatingAssemblies)
   participants: User[];
+
+  @OneToMany(() => VoteSession, voteSession => voteSession.assembly)
+  voteSessions: VoteSession[];
 
 }

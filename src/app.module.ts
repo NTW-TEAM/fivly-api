@@ -29,6 +29,8 @@ import { Local } from "./locals/local.entity";
 import { JavaAppModule } from './download/javaApp.module';
 import { AssemblyModule } from './assembly/assembly.module';
 import { Assembly } from "./assembly/assembly.entity";
+import { VoteSession } from "./assembly/votesession.entity";
+import { Vote } from "./assembly/vote.entity";
 
 @Module({
   imports: [
@@ -55,7 +57,7 @@ import { Assembly } from "./assembly/assembly.entity";
         username: config.get('MYSQL_USER'),
         password: config.get('MYSQL_PASSWORD'),
         database: config.get('MYSQL_DATABASE'),
-        entities: [User, Scope, Role, Membership, ActivityType, Activity, Local, Assembly],
+        entities: [User, Scope, Role, Membership, ActivityType, Activity, Local, Assembly, VoteSession, Vote],
         synchronize: config.get('SYNCHRONIZED_DATABASE'),
         logging: config.get('LOGGING_DATABASE'),
         seeds: ['seeders/*.seed.ts'],
