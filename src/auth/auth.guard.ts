@@ -11,7 +11,7 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     // si la route est la route /auth/login ou la route /user/register, on ne vérifie pas le token
-    if (request.url === '/auth/login' || request.url === '/users/register' || request.url === '/java-app/checkVersion' || request.url === '/java-app/download') {
+    if (request.url === '/auth/login' || request.url === '/users/register' || request.url.contains('/java-app/checkVersion') || request.url.contains('/java-app/download')) {
       return true;
     }
     const token = this.extractTokenFromHeader(request);
