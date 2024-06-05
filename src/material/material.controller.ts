@@ -4,7 +4,6 @@ import { CreateMaterialDto } from './dto/creatematerial.dto';
 import { UpdateMaterialDto } from './dto/updatematerial.dto';
 import { CreateMaterialModelDto } from './dto/creatematerialmodel.dto';
 import { UpdateMaterialModelDto } from './dto/updatematerialmodel.dto';
-import { AssignMaterialDto } from './dto/assignmaterial.dto';
 
 @Controller('materials')
 export class MaterialController {
@@ -35,17 +34,17 @@ export class MaterialController {
     return this.materialService.remove(id);
   }
 
-  @Get('model')
+  @Get('model/findall')
   findAllModels() {
     return this.materialService.findAllModels();
   }
 
-  @Get('model/:name')
+  @Get('model/findid/:name')
   findOneModel(@Param('name') name: string) {
     return this.materialService.findOneModel(name);
   }
 
-  @Post('model')
+  @Post('model/create')
   createMaterialModel(@Body() createMaterialModelDto: CreateMaterialModelDto) {
     return this.materialService.createMaterialModel(createMaterialModelDto);
   }

@@ -5,7 +5,6 @@ export class CreateMaterialDto {
   @IsNotEmpty()
   readonly serialNumber: string;
 
-  @IsUUID()
   @IsNotEmpty()
   readonly materialModelId: string;
 }

@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { MaterialModel } from "./materialmodel.entity";
 import { Activity } from "../activity/activity.entity";
 import { Local } from "../locals/local.entity";
@@ -9,8 +9,8 @@ export class Material {
   @PrimaryGeneratedColumn("uuid")
   serialNumber: string;
 
-  @Column()
   @OneToOne(() => MaterialModel)
+  @JoinColumn()
   materialModel: MaterialModel;
 
   @ManyToMany(() => Activity, activity => activity.materials)

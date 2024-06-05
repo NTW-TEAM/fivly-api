@@ -2,7 +2,7 @@ import { Module, OnModuleInit } from "@nestjs/common";
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
-import { InjectConnection, InjectDataSource, TypeOrmModule } from "@nestjs/typeorm";
+import { InjectDataSource, TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User } from './user/user.entity';
 import { DoesMailExist } from "./user/validator/email.validator";
@@ -32,6 +32,8 @@ import { Assembly } from "./assembly/assembly.entity";
 import { VoteSession } from "./assembly/votesession.entity";
 import { Vote } from "./assembly/vote.entity";
 import { MaterialModule } from './material/material.module';
+import { MaterialModel } from "./material/materialmodel.entity";
+import { Material } from "./material/material.entity";
 
 @Module({
   imports: [
@@ -58,7 +60,7 @@ import { MaterialModule } from './material/material.module';
         username: config.get('MYSQL_USER'),
         password: config.get('MYSQL_PASSWORD'),
         database: config.get('MYSQL_DATABASE'),
-        entities: [User, Scope, Role, Membership, ActivityType, Activity, Local, Assembly, VoteSession, Vote],
+        entities: [User, Scope, Role, Membership, ActivityType, Activity, Local, Assembly, VoteSession, Vote, Material, MaterialModel],
         synchronize: config.get('SYNCHRONIZED_DATABASE'),
         logging: config.get('LOGGING_DATABASE'),
         seeds: ['seeders/*.seed.ts'],
