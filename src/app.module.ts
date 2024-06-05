@@ -31,6 +31,7 @@ import { AssemblyModule } from './assembly/assembly.module';
 import { Assembly } from "./assembly/assembly.entity";
 import { VoteSession } from "./assembly/votesession.entity";
 import { Vote } from "./assembly/vote.entity";
+import { MaterialModule } from './material/material.module';
 
 @Module({
   imports: [
@@ -73,6 +74,7 @@ import { Vote } from "./assembly/vote.entity";
     LocalsModule,
     JavaAppModule,
     AssemblyModule,
+    MaterialModule,
   ],
   controllers: [AppController],
   providers: [AppService, DoesMailExist,
