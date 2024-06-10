@@ -42,7 +42,6 @@ export class MaterialService {
     }
 
     const material = new Material();
-    material.serialNumber = createMaterialDto.serialNumber;
     material.materialModel = materialModel;
 
     return this.materialRepository.save(material);

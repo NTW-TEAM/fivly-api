@@ -1,4 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Material } from "./material.entity";
 
 @Entity()
 export class MaterialModel {
@@ -11,5 +12,8 @@ export class MaterialModel {
 
   @Column()
   image: string;
+
+  @OneToMany(() => Material, material => material.materialModel)
+  materials: Material[];
 
 }

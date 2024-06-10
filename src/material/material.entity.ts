@@ -9,8 +9,7 @@ export class Material {
   @PrimaryGeneratedColumn("uuid")
   serialNumber: string;
 
-  @OneToOne(() => MaterialModel)
-  @JoinColumn()
+  @ManyToOne(() => MaterialModel)
   materialModel: MaterialModel;
 
   @ManyToMany(() => Activity, activity => activity.materials)
