@@ -26,7 +26,6 @@ import { Activity } from "./activity/activity.entity";
 import { ActivityTypesModule } from "./activitytypes/activitytypes.module";
 import { LocalsModule } from './locals/locals.module';
 import { Local } from "./locals/local.entity";
-import { JavaAppModule } from './download/javaApp.module';
 import { AssemblyModule } from './assembly/assembly.module';
 import { Assembly } from "./assembly/assembly.entity";
 import { VoteSession } from "./assembly/votesession.entity";
@@ -74,7 +73,6 @@ import { Material } from "./material/material.entity";
     ActivityTypesModule,
     ActivityModule,
     LocalsModule,
-    JavaAppModule,
     AssemblyModule,
     MaterialModule,
   ],
