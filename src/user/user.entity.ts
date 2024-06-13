@@ -5,6 +5,7 @@ import { JoinTable } from "typeorm";
 import { Membership } from "../membership/membership.entity";
 import { Activity } from "../activity/activity.entity";
 import { Assembly } from "../assembly/assembly.entity";
+import { Permission } from "../ged/permission.entity";
 import { Crowdfunding } from "../stripe/crowdfunding.entity";
 import { Give } from "../stripe/give.entity";
 import { Donation } from "../stripe/donation.entity";
@@ -68,6 +69,9 @@ export class User {
   @JoinTable()
   participatingAssemblies: Assembly[];
 
+  @OneToMany(() => Permission, permission => permission.user)
+  filePermissions: Permission[];
+  
   @OneToMany(() => Crowdfunding, crowdfunding => crowdfunding.creator)
   crowdfundings: Crowdfunding[];
 

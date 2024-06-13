@@ -33,6 +33,10 @@ import { Vote } from "./assembly/vote.entity";
 import { MaterialModule } from "./material/material.module";
 import { MaterialModel } from "./material/materialmodel.entity";
 import { Material } from "./material/material.entity";
+import { GedModule } from './ged/ged.module';
+import { Permission } from "./ged/permission.entity";
+import { File } from "./ged/file.entity";
+import { Folder } from "./ged/folder.entity";
 import { AssociationModule } from "./association/association.module";
 import { Association } from "./association/association.entity";
 import { StripeModule } from "./stripe/stripe.module";
@@ -81,7 +85,10 @@ import { Crowdfunding } from "./stripe/crowdfunding.entity";
           MaterialModel,
           Donation,
           Give,
-          Crowdfunding],
+          Crowdfunding,
+          Permission,
+          File,
+          Folder],
         synchronize: config.get("SYNCHRONIZED_DATABASE"),
         logging: config.get("LOGGING_DATABASE"),
         seeds: ["seeders/*.seed.ts"],
@@ -97,6 +104,7 @@ import { Crowdfunding } from "./stripe/crowdfunding.entity";
     LocalsModule,
     AssemblyModule,
     MaterialModule,
+    GedModule,
     AssociationModule,
     StripeModule,
   ],
