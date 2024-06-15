@@ -99,6 +99,8 @@ export class AssemblyService {
 
     const user = await this.userRepository.findOne({ where: { id: userId } });
 
+    console.log(assembly);
+
     if (!assembly || !user || !assembly.participants.some(participant => participant.id === userId)){
       throw new NotFoundException('Assembly or User not found, or user is not participating in assembly');
     }
