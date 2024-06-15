@@ -53,7 +53,11 @@ export class MaterialService {
       throw new HttpException('Material not found', HttpStatus.NOT_FOUND);
     }
 
-    material.serialNumber = updateMaterialDto.serialNumber;
+    const local = await this.localRepository.findOne({ where: { id: updateMaterialDto.local } });
+    if (!local) {
+      throw new HttpException('Local not found', HttpStatus.NOT_FOUND);
+    }
+    material.local  = local;
 
     return this.materialRepository.save(material);
   }
