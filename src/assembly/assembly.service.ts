@@ -101,11 +101,11 @@ export class AssemblyService {
 
     console.log(assembly);
 
-    if (!assembly || !user || !assembly.participants.some(participant => participant.id === userId)){
+    if (!assembly || !user || !assembly.participants.some(participant => participant.id == userId)){
       throw new NotFoundException('Assembly or User not found, or user is not participating in assembly');
     }
 
-    assembly.participants = assembly.participants.filter(participant => participant.id !== userId);
+    assembly.participants = assembly.participants.filter(participant => participant.id != userId);
     await this.assemblyRepository.save(assembly);
   }
 
