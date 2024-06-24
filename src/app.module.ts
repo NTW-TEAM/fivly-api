@@ -33,6 +33,8 @@ import { Vote } from "./assembly/vote.entity";
 import { MaterialModule } from './material/material.module';
 import { MaterialModel } from "./material/materialmodel.entity";
 import { Material } from "./material/material.entity";
+import { AssociationModule } from './association/association.module';
+import { Association } from "./association/association.entity";
 
 @Module({
   imports: [
@@ -59,7 +61,7 @@ import { Material } from "./material/material.entity";
         username: config.get('MYSQL_USER'),
         password: config.get('MYSQL_PASSWORD'),
         database: config.get('MYSQL_DATABASE'),
-        entities: [User, Scope, Role, Membership, ActivityType, Activity, Local, Assembly, VoteSession, Vote, Material, MaterialModel],
+        entities: [Association,User, Scope, Role, Membership, ActivityType, Activity, Local, Assembly, VoteSession, Vote, Material, MaterialModel],
         synchronize: config.get('SYNCHRONIZED_DATABASE'),
         logging: config.get('LOGGING_DATABASE'),
         seeds: ['seeders/*.seed.ts'],
@@ -75,6 +77,7 @@ import { Material } from "./material/material.entity";
     LocalsModule,
     AssemblyModule,
     MaterialModule,
+    AssociationModule,
   ],
   controllers: [AppController],
   providers: [AppService, DoesMailExist,
