@@ -5,6 +5,9 @@ import { JoinTable } from "typeorm";
 import { Membership } from "../membership/membership.entity";
 import { Activity } from "../activity/activity.entity";
 import { Assembly } from "../assembly/assembly.entity";
+import { Crowdfunding } from "../stripe/crowdfunding.entity";
+import { Give } from "../stripe/give.entity";
+import { Donation } from "../stripe/donation.entity";
 
 @Entity()
 export class User {
@@ -64,5 +67,14 @@ export class User {
   @ManyToMany(() => Assembly, assembly => assembly.participants)
   @JoinTable()
   participatingAssemblies: Assembly[];
+
+  @OneToMany(() => Crowdfunding, crowdfunding => crowdfunding.creator)
+  crowdfundings: Crowdfunding[];
+
+  @OneToMany(() => Give, give => give.user)
+  gives: Give[];
+
+  @OneToMany(()=>Donation, donation => donation.potentialUser)
+  donations: Donation[];
 
 }

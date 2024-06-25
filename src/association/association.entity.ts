@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryColumn } from "typeorm";
+import { IsNotEmpty, IsString } from "class-validator";
 
 @Entity()
 export class Association {
@@ -8,4 +9,6 @@ export class Association {
   domainName:string;
   @Column()
   stripeKey:string;
+  @Column()
+  stripeWebhookSecret:string;
 }

@@ -7,4 +7,6 @@ export class UpdateAssociationDto {
   domainName?:string;
   @IsString()
   stripeKey?:string;
+  @IsString()
+  stripeWebhookSecret?:string;
 }

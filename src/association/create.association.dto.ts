@@ -1,4 +1,4 @@
-import { IsBoolean, IsDateString, IsInt, IsNotEmpty, IsString, Min } from "class-validator";
+import { IsNotEmpty, IsString } from "class-validator";
 
 export class CreateAssociationDto {
   @IsString()
@@ -10,4 +10,7 @@ export class CreateAssociationDto {
   @IsString()
   @IsNotEmpty()
   stripeKey:string;
+  @IsString()
+  @IsNotEmpty()
+  stripeWebhookSecret:string;
 }

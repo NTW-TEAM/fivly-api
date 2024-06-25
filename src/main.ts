@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { useContainer } from 'class-validator';
 import * as dotenv from 'dotenv';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,6 +20,9 @@ async function bootstrap() {
     .build();
 
   dotenv.config();
+
+  // Utilisation du middleware pour obtenir le corps brut seulement pour les webhooks Stripe
+  app.use('/stripe/webhook', bodyParser.raw({ type: 'application/json' }));
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

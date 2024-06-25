@@ -26,6 +26,7 @@ export class AssociationService {
     updateAssociationDTO.name ? association.name = updateAssociationDTO.name : association.name;
     updateAssociationDTO.domainName ? association.domainName = updateAssociationDTO.domainName : association.domainName;
     updateAssociationDTO.stripeKey ? association.stripeKey = updateAssociationDTO.stripeKey : association.stripeKey;
+    updateAssociationDTO.stripeWebhookSecret ? association.stripeWebhookSecret = updateAssociationDTO.stripeWebhookSecret : association.stripeWebhookSecret;
     return await this.associationRepository.save(association);
   }
 
