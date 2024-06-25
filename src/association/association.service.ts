@@ -18,11 +18,8 @@ export class AssociationService {
   }
 
   async update(updateAssociationDTO: UpdateAssociationDto){
-    const association = await this.associationRepository.findOneBy({name:updateAssociationDTO.name});
-    if(!association){
-      throw new NotFoundException("Association not found");
-    }
-    await this.associationRepository.delete(association);
+    await this.associationRepository.delete({});
+    const association = new Association();
     updateAssociationDTO.name ? association.name = updateAssociationDTO.name : association.name;
     updateAssociationDTO.domainName ? association.domainName = updateAssociationDTO.domainName : association.domainName;
     updateAssociationDTO.stripeKey ? association.stripeKey = updateAssociationDTO.stripeKey : association.stripeKey;
