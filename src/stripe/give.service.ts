@@ -36,7 +36,7 @@ export class GiveService {
         price_data: {
           currency: 'eur',
           product_data: {
-            name: `Donation to ${crowdfunding.title}`,
+            name: `Donation pour ${crowdfunding.title}`,
           },
           unit_amount: amount * 100,
         },
