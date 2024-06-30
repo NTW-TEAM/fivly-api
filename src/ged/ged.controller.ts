@@ -9,7 +9,7 @@ import {
   Res,
   UploadedFile,
   UseInterceptors,
-  NotFoundException, Query,
+  NotFoundException, Query, Request,
 } from "@nestjs/common";
 import { GedService } from './ged.service';
 import { Access } from './permission.entity';
@@ -39,9 +39,9 @@ export class GedController {
     return this.gedService.addFile(path, name, file.buffer);
   }
 
-  // TODO: check if it works
-  @Delete('file/:path')
-  async deleteFile(@Param('path') path: string) {
+  // WORKS WELL
+  @Delete('file')
+  async deleteFile(@Query('path') path: string) {
     return this.gedService.deleteFile(path);
   }
 
@@ -63,13 +63,13 @@ export class GedController {
     return this.gedService.moveFolder(oldPath, newPath);
   }
 
-  // TODO: check if it works
+  // WORKS WELL
   @Put('file/rename')
   async renameFile(@Body('path') path: string, @Body('newName') newName: string) {
     return this.gedService.renameFile(path, newName);
   }
 
-  // TODO: check if it works
+  // WORKS WELL
   @Put('folder/rename')
   async renameFolder(@Body('path') path: string, @Body('newName') newName: string) {
     return this.gedService.renameFolder(path, newName);
@@ -92,36 +92,26 @@ export class GedController {
   // FIXME: does not seems to work
   @Get('folder/download')
   async downloadFolder(@Query('path') path: string, @Res() res: Response) {
-    const folder = await this.gedService.downloadFolder(path);
-    res.setHeader('Content-Disposition', `attachment; filename=${path.split('/').pop()}.zip`);
-    res.send(folder);
+    try {
+      const folderBuffer = await this.gedService.downloadFolder(path);
+      res.setHeader('Content-Disposition', `attachment; filename=${path.split('/').pop()}.zip`);
+      res.setHeader('Content-Type', 'application/zip');
+      res.send(folderBuffer);
+    } catch (error) {
+      res.status(500).send({ message: 'Failed to download folder', error: error.message });
+    }
   }
 
-  // TODO: check if it works
+  // WORKS WELL
   @Get('folder/contents')
-  async listFolderContents(@Body('path') path: string) {
-    return this.gedService.listFolderContents(path);
+  async listFolderContents(@Body('path') path: string,@Request() req: any){
+    return this.gedService.listFolderContents(req.user.id, path);
   }
 
-  // TODO: check if it works
+  // WORKS WELL
   @Get('folder/subfolders')
-  async listSubFolders(@Body('path') path: string) {
-    return this.gedService.listSubFolders(path);
+  async listSubFolders(@Body('path') path: string,@Request() req: any) {
+    return this.gedService.listSubFolders(req.user.id, path);
   }
 
 }
-
-
-  // Ajouter un dossier dans un dossier(path) (si path = "/", alors à la racine)
-  // Ajouter un fichier dans un dossier(path) (si path = "/", alors à la racine)
-  // Supprimer un fichier(path)
-  // Supprimer un dossier(path) (et tout son contenu)
-  // Déplacer un fichier(path)
-  // Déplacer un dossier(path) (et tout son contenu)
-  // Renommer un fichier(path)
-  // Renommer un dossier(path)
-  // Ajouter un utilisateur/rôle à fichier/dossier(path) (si path = "/", alors à la racine)
-  // Télécharger un fichier(path)
-  // Télécharger un dossier(path) (et tout son contenu) (zip)
-  // Lister le contenu d'un dossier(path) (si path = "/", alors à la racine) (ne pas lister les sous-dossiers et sous-fichiers, lister seulement les dossiers et fichiers du dossier demandé)
-  // Lister les sous-dossiers d'un dossier(path) (si path = "/", alors à la racine)
