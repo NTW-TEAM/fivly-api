@@ -111,6 +111,15 @@ export class UserService {
     return user.scopes.some((s) => s.name === scope);
   }
 
+  async isFirstStart() {
+    const user = await this.userRepository.find({
+      where: { firstName: 'admin' },
+    });
+    if (user.length > 0) {
+      throw new NotFoundException('An admin user already exists');
+    }
+  }
+
   async updateUser(
     userId: number,
     userUpdateRequest: UpdateUserRequest,

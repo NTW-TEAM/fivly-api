@@ -55,6 +55,11 @@ export class UserController {
     return this.userService.registerAdmin(createAdminDto);
   }
 
+  @Get('firstStart')
+  async isFirstStart() {
+    await this.userService.isFirstStart();
+  }
+
   @UseGuards(SelfUserGuard) // This guard will check if the user is the same as the one he wants to update, or if he has the scope to update another user
   @Patch(':userId')
   @ApiResponse({
