@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+} from '@nestjs/common';
 import { MaterialService } from './material.service';
 import { CreateMaterialDto } from './dto/creatematerial.dto';
 import { UpdateMaterialDto } from './dto/updatematerial.dto';
@@ -25,7 +33,10 @@ export class MaterialController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateMaterialDto: UpdateMaterialDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateMaterialDto: UpdateMaterialDto,
+  ) {
     return this.materialService.update(id, updateMaterialDto);
   }
 
@@ -50,8 +61,14 @@ export class MaterialController {
   }
 
   @Put('model/:name')
-  updateMaterialModel(@Param('name') name: string, @Body() updateMaterialModelDto: UpdateMaterialModelDto) {
-    return this.materialService.updateMaterialModel(name, updateMaterialModelDto);
+  updateMaterialModel(
+    @Param('name') name: string,
+    @Body() updateMaterialModelDto: UpdateMaterialModelDto,
+  ) {
+    return this.materialService.updateMaterialModel(
+      name,
+      updateMaterialModelDto,
+    );
   }
 
   @Delete('model/:name')
@@ -60,17 +77,26 @@ export class MaterialController {
   }
 
   @Post(':id/assign/:activityId')
-  assignMaterialToActivity(@Param('id') id: string, @Param('activityId') activityId: number) {
+  assignMaterialToActivity(
+    @Param('id') id: string,
+    @Param('activityId') activityId: number,
+  ) {
     return this.materialService.assignMaterialToActivity(id, activityId);
   }
 
   @Delete(':id/unassign/:activityId')
-  unassignMaterialFromActivity(@Param('id') id: string, @Param('activityId') activityId: number) {
+  unassignMaterialFromActivity(
+    @Param('id') id: string,
+    @Param('activityId') activityId: number,
+  ) {
     return this.materialService.unassignMaterialFromActivity(id, activityId);
   }
 
   @Post(':id/local/:localId')
-  assignMaterialToLocal(@Param('id') id: string, @Param('localId') localId: number) {
+  assignMaterialToLocal(
+    @Param('id') id: string,
+    @Param('localId') localId: number,
+  ) {
     return this.materialService.assignMaterialToLocal(id, localId);
   }
 }

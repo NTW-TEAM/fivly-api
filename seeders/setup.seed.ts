@@ -12,12 +12,14 @@ function getRequiredEnvVar(name: string): string {
 export default class SetupSeeder implements Seeder {
   public async run(
     dataSource: DataSource,
-    factoryManager: SeederFactoryManager
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    factoryManager: SeederFactoryManager,
   ): Promise<any> {
     const count = await dataSource.query(`SELECT COUNT(*) FROM role`);
-    if (count[0]['COUNT(*)'] != 0)
-      return;
-    await dataSource.query("INSERT INTO folder (id, name, path) VALUES (1, '','/')")
+    if (count[0]['COUNT(*)'] != 0) return;
+    await dataSource.query(
+      "INSERT INTO folder (id, name, path) VALUES (1, '','/')",
+    );
 
     await dataSource.query(getRequiredEnvVar('SQL_INSERT_ROLE_MEMBER'));
     await dataSource.query(getRequiredEnvVar('SQL_INSERT_ROLE_ADMIN'));
@@ -26,7 +28,9 @@ export default class SetupSeeder implements Seeder {
     await dataSource.query(getRequiredEnvVar('SQL_INSERT_SCOPE_USER_MANAGE'));
     await dataSource.query(getRequiredEnvVar('SQL_INSERT_SCOPE_ROLES_MANAGE'));
     await dataSource.query(getRequiredEnvVar('SQL_INSERT_SCOPE_LOCALS_MANAGE'));
-    await dataSource.query(getRequiredEnvVar('SQL_INSERT_SCOPE_ASSEMBLIES_MANAGE'));
+    await dataSource.query(
+      getRequiredEnvVar('SQL_INSERT_SCOPE_ASSEMBLIES_MANAGE'),
+    );
 
     await dataSource.query(getRequiredEnvVar('SQL_INSERT_ROLE_SCOPES'));
 

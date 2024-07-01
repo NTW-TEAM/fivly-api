@@ -1,15 +1,15 @@
-import { HttpException, Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "../user/user.entity";
-import { Repository } from "typeorm";
-import { ActivityType } from "./activitytype.entity";
+import { HttpException, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from '../user/user.entity';
+import { Repository } from 'typeorm';
+import { ActivityType } from './activitytype.entity';
 
 @Injectable()
 export class ActivityTypesService {
-
   constructor(
-    @InjectRepository(ActivityType) private activityTypeRepository: Repository<ActivityType>) {
-  }
+    @InjectRepository(ActivityType)
+    private activityTypeRepository: Repository<ActivityType>,
+  ) {}
 
   async getAll(): Promise<ActivityType[]> {
     return await this.activityTypeRepository.find();

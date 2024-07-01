@@ -1,17 +1,29 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import { Request } from "express";
-import { ConfigService } from "@nestjs/config";
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { Request } from 'express';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService,
-              private configService: ConfigService) {}
+  constructor(
+    private jwtService: JwtService,
+    private configService: ConfigService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     // si la route est la route /auth/login ou la route /user/register, on ne vérifie pas le token
-    if (request.url === '/auth/login' || request.url === '/users/register' || request.url === '/association' || request.url.startsWith('/stripe/')) {
+    if (
+      request.url === '/auth/login' ||
+      request.url === '/users/register' ||
+      request.url === '/association' ||
+      request.url.startsWith('/stripe/')
+    ) {
       return true;
     }
 
@@ -19,7 +31,7 @@ export class AuthGuard implements CanActivate {
     if (stringUrl.includes('/java-app/download')) {
       return true;
     }
-    if(stringUrl.includes('/java-app/checkVersion')) {
+    if (stringUrl.includes('/java-app/checkVersion')) {
       return true;
     }
     const token = this.extractTokenFromHeader(request);

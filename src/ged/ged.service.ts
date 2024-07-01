@@ -1,15 +1,18 @@
-import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Folder } from "./folder.entity";
-import { File } from "./file.entity";
-import * as Minio from "minio";
-import { User } from "../user/user.entity";
-import { Role } from "../roles/role.entity";
-import { Access, Permission } from "./permission.entity";
-import * as archiver from "archiver";
-import * as streamBuffers from "stream-buffers";
-import { WritableStreamBuffer } from "stream-buffers";
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Folder } from './folder.entity';
+import { File } from './file.entity';
+import * as Minio from 'minio';
+import { User } from '../user/user.entity';
+import { Role } from '../roles/role.entity';
+import { Access, Permission } from './permission.entity';
+import * as archiver from 'archiver';
+import { WritableStreamBuffer } from 'stream-buffers';
 
 @Injectable()
 export class GedService {
@@ -26,7 +29,7 @@ export class GedService {
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
     @InjectRepository(Permission)
-    private readonly permissionRepository: Repository<Permission>
+    private readonly permissionRepository: Repository<Permission>,
   ) {
     const minioPort = process.env.MINIO_FIRST_PORT
       ? parseInt(process.env.MINIO_FIRST_PORT, 10)
@@ -71,7 +74,9 @@ export class GedService {
 
   // WORKS WELL
   async addFolder(path: string, name: string): Promise<Folder> {
-    const parentFolder = await this.folderRepository.findOne({ where: { path } });
+    const parentFolder = await this.folderRepository.findOne({
+      where: { path },
+    });
     if (!parentFolder) throw new NotFoundException('Parent folder not found');
     const folder = new Folder();
     folder.name = name;
@@ -81,9 +86,13 @@ export class GedService {
   }
 
   // WORKS WELL
-  async addFile(path: string, name: string, fileContent: Buffer): Promise<File> {
+  async addFile(
+    path: string,
+    name: string,
+    fileContent: Buffer,
+  ): Promise<File> {
     const folder = await this.folderRepository.findOne({ where: { path } });
-    if(!folder) throw new NotFoundException('Folder not found');
+    if (!folder) throw new NotFoundException('Folder not found');
     const file = new File();
     file.name = name;
     file.path = path === '/' ? `/${name}` : `${path}${name}`;
@@ -110,18 +119,20 @@ export class GedService {
     if (!folder) throw new NotFoundException('Folder not found');
 
     // Remove files within the folder
-    await this.fileRepository.createQueryBuilder()
+    await this.fileRepository
+      .createQueryBuilder()
       .delete()
       .from(File)
-      .where("path like :path", { path: `${path}%` })
+      .where('path like :path', { path: `${path}%` })
       .execute();
     console.log('Files removed');
 
     // Remove subfolders of targeted folder in the database first using query builder
-    await this.folderRepository.createQueryBuilder()
+    await this.folderRepository
+      .createQueryBuilder()
       .delete()
       .from(Folder)
-      .where("path like :path", { path: `${path}%` })
+      .where('path like :path', { path: `${path}%` })
       .execute();
     console.log('Subfolders removed');
 
@@ -133,7 +144,11 @@ export class GedService {
     const minioPathWithoutFirstSlash = path.substring(1);
 
     // Remove all files and subfolders from MinIO
-    const objectsStream = this.minioClient.listObjectsV2(this.bucketName, minioPathWithoutFirstSlash, true);
+    const objectsStream = this.minioClient.listObjectsV2(
+      this.bucketName,
+      minioPathWithoutFirstSlash,
+      true,
+    );
     const objectsList = [];
 
     for await (const obj of objectsStream) {
@@ -155,39 +170,54 @@ export class GedService {
 
   // WORKS WELL
   async moveFile(oldPath: string, newPath: string): Promise<void> {
-    const file = await this.fileRepository.findOne({ where: { path: oldPath } });
+    const file = await this.fileRepository.findOne({
+      where: { path: oldPath },
+    });
     if (!file) throw new NotFoundException('File not found');
     file.path = newPath;
 
-
     // find new folder entity
     // path of folder
-    const newPathFolder = newPath.substring(0, newPath.lastIndexOf('/')+1);
-    console.log('newPathFolder', newPathFolder)
-    const folder = await this.folderRepository.findOne({ where: { path: newPathFolder } });
-    if(!folder) throw new NotFoundException('Folder not found');
+    const newPathFolder = newPath.substring(0, newPath.lastIndexOf('/') + 1);
+    console.log('newPathFolder', newPathFolder);
+    const folder = await this.folderRepository.findOne({
+      where: { path: newPathFolder },
+    });
+    if (!folder) throw new NotFoundException('Folder not found');
     file.folder = folder;
     await this.fileRepository.save(file);
 
     // Move the file in MinIO
     const conditions = new Minio.CopyConditions();
-    await this.minioClient.copyObject(this.bucketName, newPath, `/${this.bucketName}/${oldPath}`, conditions);
+    await this.minioClient.copyObject(
+      this.bucketName,
+      newPath,
+      `/${this.bucketName}/${oldPath}`,
+      conditions,
+    );
     await this.minioClient.removeObject(this.bucketName, oldPath);
   }
 
   // WORKS WELL
-  async recMoveFilesAndFolders(folder: Folder, oldPath: string, newPath: string): Promise<void> {
-    const bestFolder = await this.folderRepository.findOne({ where: { id:folder.id }, relations: ['childrenFolders', 'files'] });
-    if(!bestFolder) return;
+  async recMoveFilesAndFolders(
+    folder: Folder,
+    oldPath: string,
+    newPath: string,
+  ): Promise<void> {
+    const bestFolder = await this.folderRepository.findOne({
+      where: { id: folder.id },
+      relations: ['childrenFolders', 'files'],
+    });
+    if (!bestFolder) return;
     const childrenFolders = bestFolder.childrenFolders;
     const files: File[] = bestFolder.files;
-    if(!childrenFolders && !files) return;
+    if (!childrenFolders && !files) return;
 
-    for(const file of files) {
+    for (const file of files) {
       await this.moveFile(file.path, file.path.replace(oldPath, newPath));
     }
 
-    for(const childFolder of childrenFolders) {
+    for (const childFolder of childrenFolders) {
       childFolder.path = childFolder.path.replace(oldPath, newPath);
       await this.folderRepository.save(childFolder);
       await this.recMoveFilesAndFolders(childFolder, oldPath, newPath);
@@ -196,8 +226,11 @@ export class GedService {
 
   // WORKS WELL
   async moveFolder(oldPath: string, newPath: string): Promise<void> {
-    if(oldPath === newPath) throw new ConflictException('Old path and new path are the same');
-    const folder = await this.folderRepository.findOne({ where: { path: oldPath } });
+    if (oldPath === newPath)
+      throw new ConflictException('Old path and new path are the same');
+    const folder = await this.folderRepository.findOne({
+      where: { path: oldPath },
+    });
     if (!folder) throw new NotFoundException('Folder not found');
     folder.path = newPath;
     folder.name = newPath.split('/').slice(-2)[0];
@@ -213,7 +246,8 @@ export class GedService {
     if (!file) throw new NotFoundException('File not found');
 
     // check if newName is equals to the last file name
-    if(file.name === newName) throw new ConflictException('New name is the same as the old one');
+    if (file.name === newName)
+      throw new ConflictException('New name is the same as the old one');
     const newPath = path.replace(file.name, newName);
     file.path = newPath;
     file.name = newName;
@@ -221,15 +255,24 @@ export class GedService {
 
     // Rename the file in MinIO
     const conditions = new Minio.CopyConditions();
-    await this.minioClient.copyObject(this.bucketName, newPath, `/${this.bucketName}/${path}`, conditions);
+    await this.minioClient.copyObject(
+      this.bucketName,
+      newPath,
+      `/${this.bucketName}/${path}`,
+      conditions,
+    );
     await this.minioClient.removeObject(this.bucketName, path);
   }
 
   async renameFolder(path: string, newName: string): Promise<void> {
     // check if newName is equals to the last folder name
-    const folder = await this.folderRepository.findOne({ where: { path }, relations: ['parentFolder']});
+    const folder = await this.folderRepository.findOne({
+      where: { path },
+      relations: ['parentFolder'],
+    });
     if (!folder) throw new NotFoundException('Folder not found');
-    if(folder.name === newName) throw new ConflictException('New name is the same as the old one');
+    if (folder.name === newName)
+      throw new ConflictException('New name is the same as the old one');
 
     const parentDir = folder.parentFolder.path;
     const newPath = `${parentDir}${newName}/`;
@@ -237,22 +280,26 @@ export class GedService {
   }
 
   // FIXME: vérifier avec les vraies permissions voulues sur l'architecture de départ
-  async addPermissionToPath(path: string, userId: number, roleId: string, access: Access): Promise<Permission> {
-
-    const user = await this.userRepository.findOneBy({id:userId});
-    const role = await this.roleRepository.findOneBy({ name:roleId });
+  async addPermissionToPath(
+    path: string,
+    userId: number,
+    roleId: string,
+    access: Access,
+  ): Promise<Permission> {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    const role = await this.roleRepository.findOneBy({ name: roleId });
     if (!user || !role) throw new NotFoundException('User or role not found');
     console.log('user : ', user);
     console.log('role : ', role);
 
-    let file = await this.fileRepository.findOne({ where: { path } });
-    let folder = await this.folderRepository.findOne({ where: { path } });
+    const file = await this.fileRepository.findOne({ where: { path } });
+    const folder = await this.folderRepository.findOne({ where: { path } });
 
     if (!file && !folder) throw new NotFoundException('Path does not exist');
 
     const permission = new Permission();
-    if(userId) permission.user = user;
-    if(roleId) permission.role = role;
+    if (userId) permission.user = user;
+    if (roleId) permission.role = role;
     permission.access = access;
     if (file) {
       permission.file = file;
@@ -279,11 +326,18 @@ export class GedService {
     const writableStreamBuffer = new WritableStreamBuffer();
     archive.pipe(writableStreamBuffer);
 
-    const objectsList = this.minioClient.listObjectsV2(this.bucketName, path, true);
+    const objectsList = this.minioClient.listObjectsV2(
+      this.bucketName,
+      path,
+      true,
+    );
 
     for await (const obj of objectsList) {
       if (obj.name.endsWith('/')) continue; // Skip directories
-      const fileStream = await this.minioClient.getObject(this.bucketName, obj.name);
+      const fileStream = await this.minioClient.getObject(
+        this.bucketName,
+        obj.name,
+      );
       archive.append(fileStream, { name: obj.name.replace(path, '') });
     }
 
@@ -300,97 +354,117 @@ export class GedService {
     });
   }
 
-  async getRights(user: User, path: string): Promise<Access > {
+  async getRights(user: User, path: string): Promise<Access> {
     console.log('checking rights for path : ', path);
     console.log('user : ', user.email);
-    const file = await this.fileRepository.findOne({ where: { path }, relations: ['folder']});
-    const folder = await this.folderRepository.findOne({ where: { path }, relations: ['parentFolder']});
+    const file = await this.fileRepository.findOne({
+      where: { path },
+      relations: ['folder'],
+    });
+    const folder = await this.folderRepository.findOne({
+      where: { path },
+      relations: ['parentFolder'],
+    });
 
     if (!file && !folder) throw new NotFoundException('Path does not exist');
-    if(file) console.log('file checked : ', file.name);
-    if(folder) console.log('folder checked : ', folder.path);
+    if (file) console.log('file checked : ', file.name);
+    if (folder) console.log('folder checked : ', folder.path);
 
     // find all permissions of user and user.roles, and check if there is a permission for the file or folder, if not, check if there is a permission for the parent folder
-    const userPermissions = await this.permissionRepository.find({ where: { user },relations: ['file', 'folder']});
+    const userPermissions = await this.permissionRepository.find({
+      where: { user },
+      relations: ['file', 'folder'],
+    });
 
     const userRoles = user.roles;
     let rolePermissions: Permission[] = [];
-    for(const role of userRoles) {
-      const permissions = await this.permissionRepository.find({ where: { role }, relations: ['file', 'folder']});
+    for (const role of userRoles) {
+      const permissions = await this.permissionRepository.find({
+        where: { role },
+        relations: ['file', 'folder'],
+      });
       rolePermissions = rolePermissions.concat(permissions);
     }
     const allPermissions = userPermissions.concat(rolePermissions);
     // check if there is a permission for the file or folder
     let permission;
-    if(file) {
-      permission = allPermissions.find(p => p.file && p.file.path === file.path);
+    if (file) {
+      permission = allPermissions.find(
+        (p) => p.file && p.file.path === file.path,
+      );
     }
-    if(folder) {
-      permission = allPermissions.find(p => p.folder && p.folder.path === folder.path);
+    if (folder) {
+      permission = allPermissions.find(
+        (p) => p.folder && p.folder.path === folder.path,
+      );
     }
-    if(permission) {
+    if (permission) {
       console.log('permission found : ', permission.access);
       return permission.access;
     }
     // check if we are at the root
-    if(path === '/') {
-      console.log("path is /, returning NONE")
+    if (path === '/') {
+      console.log('path is /, returning NONE');
       return Access.NONE;
     }
     // check if there is a permission for the parent folder
-    let parentFolderPath: string = "";
-    if(file) {
+    let parentFolderPath: string = '';
+    if (file) {
       console.log('file.folder.path : ', file.folder.path);
       parentFolderPath = file.folder.path;
     }
-    if(folder) {
+    if (folder) {
       console.log('folder.parentFolder.path : ', folder.parentFolder.path);
       parentFolderPath = folder.parentFolder.path;
     }
     return await this.getRights(user, parentFolderPath);
   }
 
-  async listFolderContents(userId: number, path: string): Promise<{ folders: (Folder|null)[], files: (File|null)[] }> {
+  async listFolderContents(
+    userId: number,
+    path: string,
+  ): Promise<{ folders: (Folder | null)[]; files: (File | null)[] }> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('User not found');
 
-    const folder = await this.folderRepository.findOne({ where: { path }, relations: ['childrenFolders', 'files'] });
+    const folder = await this.folderRepository.findOne({
+      where: { path },
+      relations: ['childrenFolders', 'files'],
+    });
     if (!folder) throw new NotFoundException('Folder not found');
-
 
     const folders = folder.childrenFolders;
     // Check if user can read each folder
     const foldersFiltered = await Promise.all(
       folders.map(async (folder) => {
         const access = await this.getRights(user, folder.path);
-        console.log("checking access for folder", folder.path, access);
-        console.log("read access : ", Access.READ);
-        console.log("access : ", access);
-        console.log("access >= Access.READ : ", access >= Access.READ);
+        console.log('checking access for folder', folder.path, access);
+        console.log('read access : ', Access.READ);
+        console.log('access : ', access);
+        console.log('access >= Access.READ : ', access >= Access.READ);
         return access >= Access.READ ? folder : null;
-      })
-    ).then(folders => folders.filter(folder => folder !== null));
-    console.log("folders after filter : ", foldersFiltered);
+      }),
+    ).then((folders) => folders.filter((folder) => folder !== null));
+    console.log('folders after filter : ', foldersFiltered);
 
     const files = folder.files;
-    console.log("files before filter : ", files);
+    console.log('files before filter : ', files);
 
     // Check if user can read each file
     const filesFiltered = await Promise.all(
       files.map(async (file) => {
         const access = await this.getRights(user, file.path);
-        console.log("checking access for file", file.path, access);
-        console.log("read access : ", Access.READ);
-        console.log("access : ", access);
-        console.log("access >= Access.READ : ", access >= Access.READ);
+        console.log('checking access for file', file.path, access);
+        console.log('read access : ', Access.READ);
+        console.log('access : ', access);
+        console.log('access >= Access.READ : ', access >= Access.READ);
         return access >= Access.READ ? file : null;
-      })
-    ).then(files => files.filter(file => file !== null));
-    console.log("files after filter : ", filesFiltered);
+      }),
+    ).then((files) => files.filter((file) => file !== null));
+    console.log('files after filter : ', filesFiltered);
 
-    return { folders:foldersFiltered, files:filesFiltered };
-}
-
+    return { folders: foldersFiltered, files: filesFiltered };
+  }
 
   async listSubFolders(userId: number, path: string): Promise<Folder[]> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
@@ -398,7 +472,10 @@ export class GedService {
     const folder = await this.folderRepository.findOne({ where: { path } });
     if (!folder) throw new NotFoundException('Folder not found');
 
-    const childrenFolders = await this.folderRepository.find({ where: { path }, relations: ['childrenFolders'] });
+    const childrenFolders = await this.folderRepository.find({
+      where: { path },
+      relations: ['childrenFolders'],
+    });
 
     // Check if user can read each folder
     return childrenFolders.filter(async (childFolder) => {
@@ -407,4 +484,8 @@ export class GedService {
     });
   }
 
+  async fileExists(path: string) {
+    const file = await this.fileRepository.findOne({ where: { path } });
+    return file !== null;
+  }
 }

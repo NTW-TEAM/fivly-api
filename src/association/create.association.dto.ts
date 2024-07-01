@@ -1,16 +1,16 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateAssociationDto {
   @IsString()
   @IsNotEmpty()
-  name:string;
+  name: string;
   @IsString()
   @IsNotEmpty()
-  domainName:string;
+  domainName: string;
   @IsString()
   @IsNotEmpty()
-  stripeKey:string;
+  stripeKey: string;
   @IsString()
   @IsNotEmpty()
-  stripeWebhookSecret:string;
+  stripeWebhookSecret: string;
 }

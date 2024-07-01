@@ -5,7 +5,7 @@ import {
 } from 'class-validator';
 import { EntityManager } from 'typeorm';
 import { Injectable } from '@nestjs/common';
-import { Role } from "../role.entity";
+import { Role } from '../role.entity';
 
 @ValidatorConstraint({ name: 'DoesRoleNameExist', async: true })
 @Injectable()
