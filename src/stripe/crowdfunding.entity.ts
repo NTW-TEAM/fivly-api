@@ -1,6 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from "typeorm";
-import { User } from "../user/user.entity";
-import { Give } from "./give.entity";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
+import { User } from '../user/user.entity';
+import { Give } from './give.entity';
 
 @Entity()
 export class Crowdfunding {
@@ -10,13 +16,13 @@ export class Crowdfunding {
   @Column()
   title: string;
 
-  @Column("text")
+  @Column('text')
   description: string;
 
-  @Column("decimal")
+  @Column('decimal')
   goalAmount: number;
 
-  @Column("decimal")
+  @Column('decimal')
   actualAmount: number;
 
   @Column()
@@ -25,9 +31,9 @@ export class Crowdfunding {
   @Column()
   endDatetime: Date;
 
-  @ManyToOne(() => User, user => user.crowdfundings)
+  @ManyToOne(() => User, (user) => user.crowdfundings)
   creator: User;
 
-  @OneToMany(() => Give, give => give.crowdfunding)
+  @OneToMany(() => Give, (give) => give.crowdfunding)
   gives: Give[];
 }

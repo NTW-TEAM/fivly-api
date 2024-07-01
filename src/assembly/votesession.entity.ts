@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Assembly } from './assembly.entity';
 import { Vote } from './vote.entity';
 
@@ -28,9 +34,9 @@ export class VoteSession {
   @Column()
   canceled: boolean;
 
-  @ManyToOne(() => Assembly, assembly => assembly.voteSessions)
+  @ManyToOne(() => Assembly, (assembly) => assembly.voteSessions)
   assembly: Assembly;
 
-  @OneToMany(() => Vote, vote => vote.voteSession)
+  @OneToMany(() => Vote, (vote) => vote.voteSession)
   votes: Vote[];
 }

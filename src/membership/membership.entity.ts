@@ -1,5 +1,5 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { User } from "../user/user.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from '../user/user.entity';
 
 @Entity()
 export class Membership {
@@ -9,7 +9,6 @@ export class Membership {
   @Column()
   membershipDate: Date;
 
-  @ManyToOne(() => User, user => user.memberships)
+  @ManyToOne(() => User, (user) => user.memberships)
   user: User;
-
 }

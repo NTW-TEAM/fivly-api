@@ -1,8 +1,15 @@
-import { Column, Entity, ManyToMany, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { ApiProperty } from "@nestjs/swagger";
-import { User } from "../user/user.entity";
-import { JoinTable } from "typeorm";
-import { Role } from "../roles/role.entity";
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  ManyToOne,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
+import { User } from '../user/user.entity';
+import { JoinTable } from 'typeorm';
+import { Role } from '../roles/role.entity';
 
 @Entity()
 export class Scope {

@@ -1,6 +1,13 @@
-import { Column, Entity, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { User } from "../user/user.entity";
-import { VoteSession } from "./votesession.entity";
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { User } from '../user/user.entity';
+import { VoteSession } from './votesession.entity';
 
 @Entity()
 export class Assembly {
@@ -25,10 +32,9 @@ export class Assembly {
   @Column()
   location: string;
 
-  @ManyToMany(() => User, user => user.participatingAssemblies)
+  @ManyToMany(() => User, (user) => user.participatingAssemblies)
   participants: User[];
 
-  @OneToMany(() => VoteSession, voteSession => voteSession.assembly)
+  @OneToMany(() => VoteSession, (voteSession) => voteSession.assembly)
   voteSessions: VoteSession[];
-
 }

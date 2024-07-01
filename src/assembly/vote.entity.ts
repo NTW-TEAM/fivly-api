@@ -13,6 +13,6 @@ export class Vote {
   @ManyToOne(() => User)
   user: User;
 
-  @ManyToOne(() => VoteSession, voteSession => voteSession.votes)
+  @ManyToOne(() => VoteSession, (voteSession) => voteSession.votes)
   voteSession: VoteSession;
 }

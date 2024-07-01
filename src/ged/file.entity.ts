@@ -1,10 +1,15 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { Folder } from "./folder.entity";
-import { Permission } from "./permission.entity";
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Folder } from './folder.entity';
+import { Permission } from './permission.entity';
 
 @Entity()
 export class File {
-
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -14,9 +19,9 @@ export class File {
   @Column()
   path: string;
 
-  @ManyToOne(() => Folder, folder => folder.files)
+  @ManyToOne(() => Folder, (folder) => folder.files)
   folder: Folder;
 
-  @OneToMany(() => Permission, permission => permission.file)
+  @OneToMany(() => Permission, (permission) => permission.file)
   permissions: Permission[];
 }

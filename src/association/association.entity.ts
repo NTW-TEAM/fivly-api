@@ -1,14 +1,14 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
-import { IsNotEmpty, IsString } from "class-validator";
+import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 @Entity()
 export class Association {
   @PrimaryColumn()
-  name:string;
+  name: string;
   @Column()
-  domainName:string;
+  domainName: string;
   @Column()
-  stripeKey:string;
+  stripeKey: string;
   @Column()
-  stripeWebhookSecret:string;
+  stripeWebhookSecret: string;
 }

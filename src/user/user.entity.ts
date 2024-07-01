@@ -1,14 +1,21 @@
-import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Scope } from "../scope/scope.entity";
-import { Role } from "../roles/role.entity";
-import { JoinTable } from "typeorm";
-import { Membership } from "../membership/membership.entity";
-import { Activity } from "../activity/activity.entity";
-import { Assembly } from "../assembly/assembly.entity";
-import { Permission } from "../ged/permission.entity";
-import { Crowdfunding } from "../stripe/crowdfunding.entity";
-import { Give } from "../stripe/give.entity";
-import { Donation } from "../stripe/donation.entity";
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Scope } from '../scope/scope.entity';
+import { Role } from '../roles/role.entity';
+import { JoinTable } from 'typeorm';
+import { Membership } from '../membership/membership.entity';
+import { Activity } from '../activity/activity.entity';
+import { Assembly } from '../assembly/assembly.entity';
+import { Permission } from '../ged/permission.entity';
+import { Crowdfunding } from '../stripe/crowdfunding.entity';
+import { Give } from '../stripe/give.entity';
+import { Donation } from '../stripe/donation.entity';
 
 @Entity()
 export class User {
@@ -56,29 +63,28 @@ export class User {
   @JoinTable()
   scopes: Scope[];
 
-  @OneToMany(() => Membership, membership => membership.user)
+  @OneToMany(() => Membership, (membership) => membership.user)
   memberships: Membership[];
 
-  @OneToMany(() => Activity, activity => activity.owner)
+  @OneToMany(() => Activity, (activity) => activity.owner)
   ownedActivities: Activity[];
 
-  @ManyToMany(() => Activity, activity => activity.participants)
+  @ManyToMany(() => Activity, (activity) => activity.participants)
   participatingActivities: Activity[];
 
-  @ManyToMany(() => Assembly, assembly => assembly.participants)
+  @ManyToMany(() => Assembly, (assembly) => assembly.participants)
   @JoinTable()
   participatingAssemblies: Assembly[];
 
-  @OneToMany(() => Permission, permission => permission.user)
+  @OneToMany(() => Permission, (permission) => permission.user)
   filePermissions: Permission[];
-  
-  @OneToMany(() => Crowdfunding, crowdfunding => crowdfunding.creator)
+
+  @OneToMany(() => Crowdfunding, (crowdfunding) => crowdfunding.creator)
   crowdfundings: Crowdfunding[];
 
-  @OneToMany(() => Give, give => give.user)
+  @OneToMany(() => Give, (give) => give.user)
   gives: Give[];
 
-  @OneToMany(()=>Donation, donation => donation.potentialUser)
+  @OneToMany(() => Donation, (donation) => donation.potentialUser)
   donations: Donation[];
-
 }

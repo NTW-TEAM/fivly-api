@@ -1,13 +1,20 @@
-import { Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post } from "@nestjs/common";
-import { ActivityTypesService } from "./activitytypes.service";
-import { ActivityType } from "./activitytype.entity";
-import { ApiResponse } from "@nestjs/swagger";
+import {
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+} from '@nestjs/common';
+import { ActivityTypesService } from './activitytypes.service';
+import { ActivityType } from './activitytype.entity';
+import { ApiResponse } from '@nestjs/swagger';
 
 @Controller('activity-types')
 export class ActivityTypesController {
-
-  constructor(private activitytypesService: ActivityTypesService) {
-  }
+  constructor(private activitytypesService: ActivityTypesService) {}
 
   @Get()
   @ApiResponse({
@@ -25,16 +32,13 @@ export class ActivityTypesController {
 
   @Post(':name')
   @HttpCode(201)
-  async create(@Param('name') name: string ): Promise<void> {
+  async create(@Param('name') name: string): Promise<void> {
     return this.activitytypesService.create(name);
   }
 
   @Delete(':name')
   @HttpCode(204)
-  async delete(@Param('name') name: string ): Promise<void> {
+  async delete(@Param('name') name: string): Promise<void> {
     return this.activitytypesService.delete(name);
   }
-
-
-
 }

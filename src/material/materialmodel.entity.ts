@@ -1,9 +1,14 @@
-import { Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { Material } from "./material.entity";
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Material } from './material.entity';
 
 @Entity()
 export class MaterialModel {
-
   @PrimaryColumn()
   name: string;
 
@@ -13,7 +18,6 @@ export class MaterialModel {
   @Column()
   image: string;
 
-  @OneToMany(() => Material, material => material.materialModel)
+  @OneToMany(() => Material, (material) => material.materialModel)
   materials: Material[];
-
 }

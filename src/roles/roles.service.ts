@@ -1,35 +1,41 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Role } from "./role.entity";
-import { In, Repository } from "typeorm";
-import { CreateRoleDto } from "./dto/createrole.dto";
-import { Scope } from "../scope/scope.entity";
-import { NotFoundError } from "rxjs";
-import { UpdateScopesDTO } from "../user/dto/update.scopes.dto";
-import { User } from "../user/user.entity";
-import { ScopeService } from "../scope/scope.service";
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Role } from './role.entity';
+import { In, Repository } from 'typeorm';
+import { CreateRoleDto } from './dto/createrole.dto';
+import { Scope } from '../scope/scope.entity';
+import { NotFoundError } from 'rxjs';
+import { UpdateScopesDTO } from '../user/dto/update.scopes.dto';
+import { User } from '../user/user.entity';
+import { ScopeService } from '../scope/scope.service';
 
 @Injectable()
 export class RolesService {
-  constructor(@InjectRepository(Role) private roleRepository: Repository<Role>,
-              @InjectRepository(Scope) private scopeRepository: Repository<Scope>,
-              private scopeService: ScopeService) {}
+  constructor(
+    @InjectRepository(Role) private roleRepository: Repository<Role>,
+    @InjectRepository(Scope) private scopeRepository: Repository<Scope>,
+    private scopeService: ScopeService,
+  ) {}
 
   async getAllRoles(): Promise<Role[]> {
     // find roles with scopes
-    return await this.roleRepository.createQueryBuilder('role')
+    return await this.roleRepository
+      .createQueryBuilder('role')
       .leftJoinAndSelect('role.scopes', 'scope')
       .getMany();
   }
 
   async findByName(name: string): Promise<Role | null> {
-    return await this.roleRepository.findOneBy({ name: name});
+    return await this.roleRepository.findOneBy({ name: name });
   }
 
   async createRole(createRoleDto: CreateRoleDto) {
     // do the same than before but we need to add scopes after creating the role
     // createRoleDto without scopes (createRoleDto as name, description, and scopes)
-    const roleCreate = { name: createRoleDto.name, description: createRoleDto.description };
+    const roleCreate = {
+      name: createRoleDto.name,
+      description: createRoleDto.description,
+    };
     const newRole = this.roleRepository.create(roleCreate);
     console.log(newRole);
 
@@ -37,8 +43,8 @@ export class RolesService {
     if (createRoleDto.scopes && createRoleDto.scopes.length > 0) {
       newRole.scopes = await this.scopeRepository.find({
         where: {
-          name: In(createRoleDto.scopes)
-        }
+          name: In(createRoleDto.scopes),
+        },
       });
     }
 
@@ -46,7 +52,8 @@ export class RolesService {
   }
 
   async getRoleWithScopes(name: string) {
-    return await this.roleRepository.createQueryBuilder('role')
+    return await this.roleRepository
+      .createQueryBuilder('role')
       .leftJoinAndSelect('role.scopes', 'scope')
       .where('role.name = :name', { name })
       .getOne();
@@ -61,13 +68,16 @@ export class RolesService {
     await this.roleRepository.delete({ name: name });
   }
 
-  async updateRoleScopes(roleName: string, updateRoleScopesDto: UpdateScopesDTO): Promise<Role> {
+  async updateRoleScopes(
+    roleName: string,
+    updateRoleScopesDto: UpdateScopesDTO,
+  ): Promise<Role> {
     const scopes: string[] = updateRoleScopesDto.scopes;
 
     // Récupère le rôle à mettre à jour
-    let role = await this.findByName(roleName);
+    const role = await this.findByName(roleName);
 
-    if(!role) {
+    if (!role) {
       throw new HttpException('Role not found', HttpStatus.NOT_FOUND);
     }
 
@@ -75,9 +85,12 @@ export class RolesService {
     role.scopes = [];
     for (const scope of scopes) {
       // Récupération de l'entity scope
-      let scopeEntity = await this.scopeService.findByName(scope);
-      if(!scopeEntity) {
-        throw new HttpException(`Scope ${scope} not found`, HttpStatus.NOT_FOUND);
+      const scopeEntity = await this.scopeService.findByName(scope);
+      if (!scopeEntity) {
+        throw new HttpException(
+          `Scope ${scope} not found`,
+          HttpStatus.NOT_FOUND,
+        );
       }
       role.scopes.push(scopeEntity);
     }
@@ -85,6 +98,4 @@ export class RolesService {
     // Sauvegarde les modifications
     return await this.roleRepository.save(role);
   }
-
-
 }

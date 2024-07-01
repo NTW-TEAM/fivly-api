@@ -1,19 +1,19 @@
-import { Membership } from "./membership.entity";
+import { Membership } from './membership.entity';
 
 export class MembershipDto {
   id: number;
   membershipDate: Date;
   user: {
-    id: number,
-    firstName: string,
-    lastName: string,
-    email: string,
-    phoneNumber: string,
-    numberAndStreet: string,
-    postalCode: string,
-    city: string,
-    country: string,
-    lastConnection: Date
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+    numberAndStreet: string;
+    postalCode: string;
+    city: string;
+    country: string;
+    lastConnection: Date;
   };
 
   // find a way to create MembershipDto from Membership
@@ -30,7 +30,7 @@ export class MembershipDto {
       postalCode: membership.user.postalCode,
       city: membership.user.city,
       country: membership.user.country,
-      lastConnection: membership.user.lastConnection
+      lastConnection: membership.user.lastConnection,
     };
 
     return this;

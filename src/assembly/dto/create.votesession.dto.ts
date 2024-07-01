@@ -1,4 +1,11 @@
-import { IsBoolean, IsDateString, IsInt, IsNotEmpty, IsString, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsDateString,
+  IsInt,
+  IsNotEmpty,
+  IsString,
+  Min,
+} from 'class-validator';
 
 export class CreateVoteSessionDto {
   @IsString()

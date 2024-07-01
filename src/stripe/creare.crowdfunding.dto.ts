@@ -1,7 +1,6 @@
-import { IsDateString, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateCrowdfundingDto {
-
   @IsString()
   @IsNotEmpty()
   title: string;
@@ -10,7 +9,7 @@ export class CreateCrowdfundingDto {
   @IsNotEmpty()
   description: string;
 
-  @IsNumber({maxDecimalPlaces: 2})
+  @IsNumber({ maxDecimalPlaces: 2 })
   @IsNotEmpty()
   goalAmount: number;
 
@@ -25,5 +24,4 @@ export class CreateCrowdfundingDto {
   @IsNumber()
   @IsNotEmpty()
   creator: number;
-
 }

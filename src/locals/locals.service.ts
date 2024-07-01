@@ -1,17 +1,19 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { Local } from "./local.entity";
-import { Repository } from "typeorm";
-import { InjectRepository } from "@nestjs/typeorm";
-import { CreateLocalDTO } from "./dto/createlocal.dto";
-import { UpdateLocalDTO } from "./dto/updatelocal.dto";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { Local } from './local.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateLocalDTO } from './dto/createlocal.dto';
+import { UpdateLocalDTO } from './dto/updatelocal.dto';
 
 @Injectable()
 export class LocalsService {
-
   constructor(
-    @InjectRepository(Local) private localRepository: Repository<Local>
-  ) {
-  }
+    @InjectRepository(Local) private localRepository: Repository<Local>,
+  ) {}
   async getLocals(): Promise<Local[]> {
     return await this.localRepository.find();
   }
@@ -21,8 +23,8 @@ export class LocalsService {
   }
 
   async delete(localId: number): Promise<void> {
-    const local = await this.localRepository.findOneBy({id:localId});
-    if(!local){
+    const local = await this.localRepository.findOneBy({ id: localId });
+    if (!local) {
       throw new NotFoundException('Local not found');
     }
     await this.localRepository.delete(localId);
@@ -34,16 +36,16 @@ export class LocalsService {
       throw new BadRequestException('No data provided');
     }
 
-    const local = await this.localRepository.findOneBy({id:localId});
-    if(!local){
+    const local = await this.localRepository.findOneBy({ id: localId });
+    if (!local) {
       throw new NotFoundException('Local not found');
     }
     await this.localRepository.update(localId, updateLocalDTO);
   }
 
   async getById(localId: number): Promise<Local | null> {
-    const local = await this.localRepository.findOneBy({id:localId});
-    if(!local){
+    const local = await this.localRepository.findOneBy({ id: localId });
+    if (!local) {
       throw new NotFoundException('Local not found');
     }
     return local;

@@ -1,5 +1,5 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Material } from "../material/material.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Material } from '../material/material.entity';
 
 @Entity()
 export class Local {
@@ -21,6 +21,6 @@ export class Local {
   @Column()
   country: string;
 
-  @OneToMany(() => Material, material => material.local)
+  @OneToMany(() => Material, (material) => material.local)
   materials: Material[];
 }

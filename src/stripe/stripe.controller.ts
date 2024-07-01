@@ -1,10 +1,20 @@
-import { Controller, Post, Body, Req, Res, Get, Query, Patch, Param } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Body,
+  Req,
+  Res,
+  Get,
+  Query,
+  Patch,
+  Param,
+} from '@nestjs/common';
 import { DonationService } from './donation.service';
 import { GiveService } from './give.service';
-import Stripe from "stripe";
-import { AssociationService } from "../association/association.service";
-import { CreateCrowdfundingDto } from "./creare.crowdfunding.dto";
-import { Crowdfunding } from "./crowdfunding.entity";
+import Stripe from 'stripe';
+import { AssociationService } from '../association/association.service';
+import { CreateCrowdfundingDto } from './creare.crowdfunding.dto';
+import { Crowdfunding } from './crowdfunding.entity';
 
 @Controller('stripe')
 export class StripeController {
@@ -14,14 +24,17 @@ export class StripeController {
     private readonly giveService: GiveService,
   ) {}
 
-
   @Post('crowdfunding')
-  async createCrowdfunding(@Body() createCrowdfundingDto: CreateCrowdfundingDto) {
+  async createCrowdfunding(
+    @Body() createCrowdfundingDto: CreateCrowdfundingDto,
+  ) {
     return await this.giveService.createCrowdfunding(createCrowdfundingDto);
   }
 
   @Get('crowdfunding')
-  async getCrowdfundings(@Query() query: { onlyActive?: string }): Promise<Crowdfunding[]> {
+  async getCrowdfundings(
+    @Query() query: { onlyActive?: string },
+  ): Promise<Crowdfunding[]> {
     const onlyActive = this.convertToBoolean(query.onlyActive);
     return await this.giveService.getCrowdfundings(onlyActive);
   }
@@ -44,42 +57,63 @@ export class StripeController {
   }
 
   @Get('gives/:userId')
-  async getGives(@Param('userId') userId: number, @Query() query: { crowdfunding?: number }) {
+  async getGives(
+    @Param('userId') userId: number,
+    @Query() query: { crowdfunding?: number },
+  ) {
     return await this.giveService.getGives(userId, query.crowdfunding);
   }
 
   @Post('create-donation-session')
-  async createDonationSession(@Body() createDonationDto: { amount: number, userId?: number }) {
-    const sessionUrl = await this.donationService.createDonationSession(createDonationDto.amount, createDonationDto.userId);
+  async createDonationSession(
+    @Body() createDonationDto: { amount: number; userId?: number },
+  ) {
+    const sessionUrl = await this.donationService.createDonationSession(
+      createDonationDto.amount,
+      createDonationDto.userId,
+    );
     return { sessionUrl };
   }
 
   @Post('create-give-session')
-  async createGiveSession(@Body() createGiveDto: { userId: number, crowdfundingId: number, amount: number }) {
-    const sessionUrl = await this.giveService.createGiveSession(createGiveDto.userId, createGiveDto.crowdfundingId, createGiveDto.amount);
+  async createGiveSession(
+    @Body()
+    createGiveDto: {
+      userId: number;
+      crowdfundingId: number;
+      amount: number;
+    },
+  ) {
+    const sessionUrl = await this.giveService.createGiveSession(
+      createGiveDto.userId,
+      createGiveDto.crowdfundingId,
+      createGiveDto.amount,
+    );
     return { sessionUrl };
   }
 
   @Post('webhook')
   async handleWebhook(@Req() req: any, @Res() res: any) {
-    console.log('Webhook received')
+    console.log('Webhook received');
     const sig = req.headers['stripe-signature'];
     let event: Stripe.Event;
 
     const stripe = await this.getStripeClient();
-    const webhookKey = await this.associationService.get().then(association => association.stripeWebhookSecret);
+    const webhookKey = await this.associationService
+      .get()
+      .then((association) => association.stripeWebhookSecret);
     try {
       event = stripe.webhooks.constructEvent(req.body, sig, webhookKey);
     } catch (err) {
       return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
-    console.log('Webhook event received : ', event.type)
+    console.log('Webhook event received : ', event.type);
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
-      console.log("Session received handle webhook : ", session)
+      console.log('Session received handle webhook : ', session);
 
-      if(!session.metadata){
+      if (!session.metadata) {
         return res.status(400).send(`Webhook Error: No metadata provided`);
       }
       if (session.metadata.crowdfundingId) {
@@ -92,7 +126,7 @@ export class StripeController {
     res.json({ received: true });
   }
 
-  async getStripeClient(){
+  async getStripeClient() {
     const association = await this.associationService.get();
     return new Stripe(association.stripeKey, {
       apiVersion: '2024-04-10',

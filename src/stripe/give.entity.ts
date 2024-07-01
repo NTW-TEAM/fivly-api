@@ -1,6 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
-import { User } from "../user/user.entity";
-import { Crowdfunding } from "./crowdfunding.entity";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { User } from '../user/user.entity';
+import { Crowdfunding } from './crowdfunding.entity';
 
 @Entity()
 export class Give {
@@ -13,9 +13,9 @@ export class Give {
   @Column()
   datetime: Date;
 
-  @ManyToOne(() => User, user => user.gives)
+  @ManyToOne(() => User, (user) => user.gives)
   user: User;
 
-  @ManyToOne(() => Crowdfunding, crowdfunding => crowdfunding.gives)
+  @ManyToOne(() => Crowdfunding, (crowdfunding) => crowdfunding.gives)
   crowdfunding: Crowdfunding;
 }

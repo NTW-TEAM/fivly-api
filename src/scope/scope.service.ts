@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Scope } from "./scope.entity";
-import { Role } from "../roles/role.entity";
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Scope } from './scope.entity';
+import { Role } from '../roles/role.entity';
 
 @Injectable()
 export class ScopeService {
   constructor(
     @InjectRepository(Scope) private scopeRepository: Repository<Scope>,
   ) {}
-  async getAllScopes() : Promise<Scope[]> {
+  async getAllScopes(): Promise<Scope[]> {
     return await this.scopeRepository.find();
   }
 

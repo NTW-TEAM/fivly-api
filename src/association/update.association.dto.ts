@@ -1,12 +1,19 @@
-import { IsBoolean, IsDateString, IsInt, IsNotEmpty, IsString, Min } from "class-validator";
+import {
+  IsBoolean,
+  IsDateString,
+  IsInt,
+  IsNotEmpty,
+  IsString,
+  Min,
+} from 'class-validator';
 
 export class UpdateAssociationDto {
   @IsString()
-  name?:string;
+  name?: string;
   @IsString()
-  domainName?:string;
+  domainName?: string;
   @IsString()
-  stripeKey?:string;
+  stripeKey?: string;
   @IsString()
-  stripeWebhookSecret?:string;
+  stripeWebhookSecret?: string;
 }

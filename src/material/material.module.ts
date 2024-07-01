@@ -8,7 +8,9 @@ import { MaterialService } from './material.service';
 import { MaterialController } from './material.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Material, MaterialModel, Activity, Local])],
+  imports: [
+    TypeOrmModule.forFeature([Material, MaterialModel, Activity, Local]),
+  ],
   providers: [MaterialService],
   controllers: [MaterialController],
 })
