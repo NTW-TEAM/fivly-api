@@ -312,7 +312,13 @@ export class GedService {
 
     // find all permissions of user and user.roles, and check if there is a permission for the file or folder, if not, check if there is a permission for the parent folder
     const userPermissions = await this.permissionRepository.find({ where: { user },relations: ['file', 'folder']});
-    const rolePermissions = await this.permissionRepository.find({ where: { role: user.roles }, relations: ['file', 'folder']});
+
+    const userRoles = user.roles;
+    let rolePermissions: Permission[] = [];
+    for(const role of userRoles) {
+      const permissions = await this.permissionRepository.find({ where: { role }, relations: ['file', 'folder']});
+      rolePermissions = rolePermissions.concat(permissions);
+    }
     const allPermissions = userPermissions.concat(rolePermissions);
     // check if there is a permission for the file or folder
     let permission;
