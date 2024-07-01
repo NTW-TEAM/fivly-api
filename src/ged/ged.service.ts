@@ -355,6 +355,11 @@ export class GedService {
   }
 
   async getRights(user: User, path: string): Promise<Access> {
+    // si l'user est admin, il a tous les droits
+    if (user.roles.find((role) => role.name === 'admin')) {
+      console.log('user is admin, returning MANAGE');
+      return Access.MANAGE;
+    }
     console.log('checking rights for path : ', path);
     console.log('user : ', user.email);
     const file = await this.fileRepository.findOne({
@@ -378,13 +383,16 @@ export class GedService {
 
     const userRoles = user.roles;
     let rolePermissions: Permission[] = [];
-    for (const role of userRoles) {
-      const permissions = await this.permissionRepository.find({
-        where: { role },
-        relations: ['file', 'folder'],
-      });
-      rolePermissions = rolePermissions.concat(permissions);
+    if (userRoles) {
+      for (let i = 0; i < userRoles.length; i++) {
+        const permissions = await this.permissionRepository.find({
+          where: { role: userRoles[i] },
+          relations: ['file', 'folder'],
+        });
+        rolePermissions = rolePermissions.concat(permissions);
+      }
     }
+
     const allPermissions = userPermissions.concat(rolePermissions);
     // check if there is a permission for the file or folder
     let permission;
@@ -424,7 +432,10 @@ export class GedService {
     userId: number,
     path: string,
   ): Promise<{ folders: (Folder | null)[]; files: (File | null)[] }> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['roles'],
+    });
     if (!user) throw new NotFoundException('User not found');
 
     const folder = await this.folderRepository.findOne({
@@ -467,7 +478,10 @@ export class GedService {
   }
 
   async listSubFolders(userId: number, path: string): Promise<Folder[]> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['roles'],
+    });
     if (!user) throw new NotFoundException('User not found');
     const folder = await this.folderRepository.findOne({ where: { path } });
     if (!folder) throw new NotFoundException('Folder not found');
