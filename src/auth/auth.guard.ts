@@ -22,6 +22,7 @@ export class AuthGuard implements CanActivate {
       request.url === '/auth/login' ||
       request.url === '/users/register' ||
       request.url === '/association' ||
+      request.url === '/users/firstStart' ||
       request.url.startsWith('/stripe/')
     ) {
       return true;

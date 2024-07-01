@@ -138,13 +138,13 @@ export class GedController {
   }
 
   // WORKS WELL
-  @Get('folder/contents')
+  @Post('folder/contents')
   async listFolderContents(@Body('path') path: string, @Request() req: any) {
     return this.gedService.listFolderContents(req.user.id, path);
   }
 
   // WORKS WELL
-  @Get('folder/subfolders')
+  @Post('folder/subfolders')
   async listSubFolders(@Body('path') path: string, @Request() req: any) {
     return this.gedService.listSubFolders(req.user.id, path);
   }
