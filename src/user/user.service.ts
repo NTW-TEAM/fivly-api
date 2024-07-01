@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/createuser.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
@@ -9,6 +14,7 @@ import { UpdateUserRequest } from './dto/updateuserrequest.dto';
 import { ScopeService } from '../scope/scope.service';
 import { UpdateScopesDTO } from './dto/update.scopes.dto';
 import { Membership } from '../membership/membership.entity';
+import { CreateAdminDto } from './dto/createadmin.dto';
 
 @Injectable()
 export class UserService {
@@ -21,6 +27,12 @@ export class UserService {
   ) {}
 
   async registerUser(createUserDto: CreateUserDto): Promise<void> {
+    if (createUserDto.firstName === 'admin') {
+      throw new HttpException(
+        'You can not create an user with admin as firstname',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const newUser = this.userRepository.create(createUserDto);
 
     // Hachage du mot de passe
@@ -112,6 +124,12 @@ export class UserService {
 
     // Met à jour les propriétés de l'utilisateur
     if (userUpdateRequest.firstName) {
+      if (userUpdateRequest.firstName === 'admin') {
+        throw new HttpException(
+          'You can not update the firstname to admin',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
       user.firstName = userUpdateRequest.firstName;
     }
     if (userUpdateRequest.lastName) {
@@ -249,5 +267,39 @@ export class UserService {
 
     // Sauvegarde les modifications
     return await this.userRepository.save(user);
+  }
+
+  async registerAdmin(createAdminDto: CreateAdminDto) {
+    // check if a user has admin as firstname
+    const user = await this.userRepository.find({
+      where: { firstName: 'admin' },
+    });
+    if (user.length > 0) {
+      throw new HttpException(
+        'An admin user already exists',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const admin = new User();
+    admin.firstName = 'admin';
+    admin.lastName = 'admin';
+    admin.email = createAdminDto.email;
+    admin.password = createAdminDto.password;
+    admin.phoneNumber = '1234567890';
+    admin.numberAndStreet = '123 rue de la rue';
+    admin.postalCode = '12345';
+    admin.city = 'Paris';
+    admin.country = 'France';
+    admin.isActive = true;
+    admin.lastConnection = new Date();
+
+    const roleAdmin = await this.roleService.findByName('admin');
+    if (!roleAdmin) {
+      throw new NotFoundException('Role admin not found');
+    }
+    admin.roles = [roleAdmin];
+    await this.userRepository.save(admin);
+    return admin;
   }
 }

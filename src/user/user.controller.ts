@@ -18,6 +18,7 @@ import { SelfUserGuard } from './self.user.guard';
 import { UpdateUserRequest } from './dto/updateuserrequest.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UpdateScopesDTO } from './dto/update.scopes.dto';
+import { CreateAdminDto } from './dto/createadmin.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -43,6 +44,15 @@ export class UserController {
   })
   async registerUser(@Body() createUserDto: CreateUserDto) {
     return this.userService.registerUser(createUserDto);
+  }
+
+  @Post('register-admin')
+  @ApiResponse({
+    status: 201,
+    description: 'The user has been successfully created.',
+  })
+  async registerAdmin(@Body() createAdminDto: CreateAdminDto) {
+    return this.userService.registerAdmin(createAdminDto);
   }
 
   @UseGuards(SelfUserGuard) // This guard will check if the user is the same as the one he wants to update, or if he has the scope to update another user
