@@ -236,7 +236,7 @@ export class GedService {
     folder.name = newPath.split('/').slice(-2)[0];
 
     // check if newPath is a folder
-    const newParentPath = newPath.substring(0, newPath.lastIndexOf('/') + 1);
+    const newParentPath = newPath.substring(0, newPath.lastIndexOf('/'));
     console.log('newParentPath :', newParentPath);
     const newParentFolder = await this.folderRepository.findOne({
       where: { path: newParentPath },
