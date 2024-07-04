@@ -234,6 +234,15 @@ export class GedService {
     if (!folder) throw new NotFoundException('Folder not found');
     folder.path = newPath;
     folder.name = newPath.split('/').slice(-2)[0];
+
+    // check if newPath is a folder
+    const newParentPath = newPath.substring(0, newPath.lastIndexOf('/') + 1);
+    const newParentFolder = await this.folderRepository.findOne({
+      where: { path: newParentPath },
+    });
+    if (!newParentFolder)
+      throw new NotFoundException('New parent folder not found');
+    folder.parentFolder = newParentFolder;
     await this.folderRepository.save(folder);
     // update all files path
     // get all children folders and children files, and update path, in recursive way
