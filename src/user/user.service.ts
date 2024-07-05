@@ -294,7 +294,9 @@ export class UserService {
     admin.firstName = 'admin';
     admin.lastName = 'admin';
     admin.email = createAdminDto.email;
-    admin.password = createAdminDto.password;
+    // Hachage du mot de passe
+    const salt = await bcrypt.genSalt();
+    admin.password = await bcrypt.hash(createAdminDto.password, salt);
     admin.phoneNumber = '1234567890';
     admin.numberAndStreet = '123 rue de la rue';
     admin.postalCode = '12345';
