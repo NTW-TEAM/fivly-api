@@ -389,13 +389,15 @@ export class GedService {
   }
 
   async getRights(user: User, path: string): Promise<Access> {
-    // si l'user est admin, il a tous les droits
+    // Si l'utilisateur est admin, il a tous les droits
     if (user.roles.find((role) => role.name === 'admin')) {
       console.log('user is admin, returning MANAGE');
       return Access.MANAGE;
     }
+
     console.log('checking rights for path : ', path);
     console.log('user : ', user.email);
+
     const file = await this.fileRepository.findOne({
       where: { path },
       relations: ['folder'],
@@ -409,7 +411,7 @@ export class GedService {
     if (file) console.log('file checked : ', file.name);
     if (folder) console.log('folder checked : ', folder.path);
 
-    // find all permissions of user and user.roles, and check if there is a permission for the file or folder, if not, check if there is a permission for the parent folder
+    // Trouver toutes les permissions de l'utilisateur et de ses rôles
     const userPermissions = await this.permissionRepository.find({
       where: { user },
       relations: ['file', 'folder'],
@@ -428,42 +430,32 @@ export class GedService {
     }
 
     const allPermissions = userPermissions.concat(rolePermissions);
-    // check if there is a permission for the file or folder
-    let permission;
-    if (file) {
-      permission = allPermissions.find(
-        (p) => p.file && p.file.path === file.path,
+
+    // Vérifier les permissions pour le fichier ou le dossier et retourner l'accès le plus élevé
+    const permissionsForPath = allPermissions.filter(
+      (p) =>
+        (p.file && p.file.path === path) ||
+        (p.folder && p.folder.path === path),
+    );
+
+    if (permissionsForPath.length > 0) {
+      return permissionsForPath.reduce(
+        (max, p) => (p.access > max ? p.access : max),
+        Access.NONE,
       );
     }
-    if (folder) {
-      permission = allPermissions.find(
-        (p) => p.folder && p.folder.path === folder.path,
-      );
-    }
-    if (permission) {
-      console.log('permission found : ', permission.access);
-      if (permission.access === Access.INHERIT) {
-        if (file) {
-          return await this.getRights(user, file.folder.path);
-        } else if (folder && path !== '/') {
-          return await this.getRights(user, folder.parentFolder.path);
-        }
-      }
-      return permission.access;
-    }
-    // check if we are at the root
+
+    // Si aucune permission spécifique n'est trouvée, vérifier le dossier parent
     if (path === '/') {
       console.log('path is /, returning NONE');
       return Access.NONE;
     }
-    // check if there is a permission for the parent folder
+
     let parentFolderPath: string = '';
     if (file) {
-      console.log('file.folder.path : ', file.folder.path);
       parentFolderPath = file.folder.path;
     }
     if (folder) {
-      console.log('folder.parentFolder.path : ', folder.parentFolder.path);
       parentFolderPath = folder.parentFolder.path;
     }
     return await this.getRights(user, parentFolderPath);
@@ -474,6 +466,7 @@ export class GedService {
     path: string,
   ): Promise<{
     folders: Awaited<{
+      requesterAccess: Access;
       folder: Folder;
       rolePermissions: { access: Access; role: { name: string }; id: string }[];
       userPermissions: {
@@ -483,6 +476,7 @@ export class GedService {
       }[];
     } | null>[];
     files: Awaited<{
+      requesterAccess: Access;
       file: File;
       rolePermissions: { access: Access; role: { name: string }; id: string }[];
       userPermissions: {
@@ -509,8 +503,8 @@ export class GedService {
 
     const foldersWithPermissions = await Promise.all(
       folders.map(async (folder) => {
-        const access = await this.getRights(user, folder.path);
-        if (access >= Access.READ) {
+        const requesterAccess = await this.getRights(user, folder.path);
+        if (requesterAccess >= Access.READ) {
           const userPermissions = await this.permissionRepository.find({
             where: { folder },
             relations: ['user'],
@@ -542,6 +536,7 @@ export class GedService {
                   name: perm.role.name,
                 },
               })),
+            requesterAccess,
           };
         }
         return null;
@@ -550,8 +545,8 @@ export class GedService {
 
     const filesWithPermissions = await Promise.all(
       files.map(async (file) => {
-        const access = await this.getRights(user, file.path);
-        if (access >= Access.READ) {
+        const requesterAccess = await this.getRights(user, file.path);
+        if (requesterAccess >= Access.READ) {
           const userPermissions = await this.permissionRepository.find({
             where: { file },
             relations: ['user'],
@@ -583,6 +578,7 @@ export class GedService {
                   name: perm.role.name,
                 },
               })),
+            requesterAccess,
           };
         }
         return null;
