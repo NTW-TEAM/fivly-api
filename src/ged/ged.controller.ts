@@ -10,13 +10,14 @@ import {
   UseInterceptors,
   NotFoundException,
   Query,
-  Request,
-} from '@nestjs/common';
+  Request, UseGuards
+} from "@nestjs/common";
 import { GedService } from './ged.service';
 import { Access } from './permission.entity';
 import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
+import { ManageAccessGuard } from "./guard/ged.guard";
 
 const storage = multer.memoryStorage();
 
@@ -92,8 +93,9 @@ export class GedController {
     return this.gedService.renameFolder(path, newName);
   }
 
-  // TODO: check if it works
+  // WORKS WELL (keep in mind that access for creating/deleting folder and files is not checked)
   @Post('permission')
+  @UseGuards(ManageAccessGuard)
   async addPermissionToPath(
     @Body('path') path: string,
     @Body('userId') userId: number,
@@ -120,7 +122,7 @@ export class GedController {
   }
 
   // FIXME: does not seems to work
-  @Get('folder/download')
+  // @Get('folder/download')
   async downloadFolder(@Query('path') path: string, @Res() res: Response) {
     try {
       const folderBuffer = await this.gedService.downloadFolder(path);

@@ -291,37 +291,6 @@ export class GedService {
     await this.moveFolder(path, newPath);
   }
 
-  // FIXME: vérifier avec les vraies permissions voulues sur l'architecture de départ
-  async addPermissionToPath(
-    path: string,
-    userId: number,
-    roleId: string,
-    access: Access,
-  ): Promise<Permission> {
-    const user = await this.userRepository.findOneBy({ id: userId });
-    const role = await this.roleRepository.findOneBy({ name: roleId });
-    if (!user || !role) throw new NotFoundException('User or role not found');
-    console.log('user : ', user);
-    console.log('role : ', role);
-
-    const file = await this.fileRepository.findOne({ where: { path } });
-    const folder = await this.folderRepository.findOne({ where: { path } });
-
-    if (!file && !folder) throw new NotFoundException('Path does not exist');
-
-    const permission = new Permission();
-    if (userId) permission.user = user;
-    if (roleId) permission.role = role;
-    permission.access = access;
-    if (file) {
-      permission.file = file;
-    } else if (folder) {
-      permission.folder = folder;
-    }
-
-    return this.permissionRepository.save(permission);
-  }
-
   // WORKS WELL
   async downloadFile(path: string): Promise<Buffer> {
     const fileStream = await this.minioClient.getObject(this.bucketName, path);
@@ -364,6 +333,59 @@ export class GedService {
         reject(err);
       });
     });
+  }
+
+  async addPermissionToPath(
+    path: string,
+    userId: number,
+    roleId: string,
+    access: Access,
+  ): Promise<Permission> {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    const role = await this.roleRepository.findOneBy({ name: roleId });
+    if (!user || !role) throw new NotFoundException('User or role not found');
+    console.log('user : ', user);
+    console.log('role : ', role);
+
+    const file = await this.fileRepository.findOne({ where: { path } });
+    const folder = await this.folderRepository.findOne({ where: { path } });
+
+    if (!file && !folder) throw new NotFoundException('Path does not exist');
+    let existingPermission;
+
+    if (userId && file) {
+      existingPermission = await this.permissionRepository.findOne({
+        where: { user, file },
+      });
+    } else if (userId && folder) {
+      existingPermission = await this.permissionRepository.findOne({
+        where: { user, folder },
+      });
+    } else if (roleId && file) {
+      existingPermission = await this.permissionRepository.findOne({
+        where: { role, file },
+      });
+    } else if (roleId && folder) {
+      existingPermission = await this.permissionRepository.findOne({
+        where: { role, folder },
+      });
+    }
+
+    if (existingPermission) {
+      existingPermission.access = access;
+      return this.permissionRepository.save(existingPermission);
+    } else {
+      const permission = new Permission();
+      if (userId) permission.user = user;
+      if (roleId) permission.role = role;
+      permission.access = access;
+      if (file) {
+        permission.file = file;
+      } else if (folder) {
+        permission.folder = folder;
+      }
+      return this.permissionRepository.save(permission);
+    }
   }
 
   async getRights(user: User, path: string): Promise<Access> {
@@ -420,6 +442,13 @@ export class GedService {
     }
     if (permission) {
       console.log('permission found : ', permission.access);
+      if (permission.access === Access.INHERIT) {
+        if (file) {
+          return await this.getRights(user, file.folder.path);
+        } else if (folder && path !== '/') {
+          return await this.getRights(user, folder.parentFolder.path);
+        }
+      }
       return permission.access;
     }
     // check if we are at the root
@@ -443,7 +472,26 @@ export class GedService {
   async listFolderContents(
     userId: number,
     path: string,
-  ): Promise<{ folders: (Folder | null)[]; files: (File | null)[] }> {
+  ): Promise<{
+    folders: Awaited<{
+      folder: Folder;
+      rolePermissions: { access: Access; role: { name: string }; id: string }[];
+      userPermissions: {
+        access: Access;
+        id: string;
+        user: { firstName: string; lastName: string; email: string };
+      }[];
+    } | null>[];
+    files: Awaited<{
+      file: File;
+      rolePermissions: { access: Access; role: { name: string }; id: string }[];
+      userPermissions: {
+        access: Access;
+        id: string;
+        user: { firstName: string; lastName: string; email: string };
+      }[];
+    } | null>[];
+  }> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['roles'],
@@ -457,36 +505,91 @@ export class GedService {
     if (!folder) throw new NotFoundException('Folder not found');
 
     const folders = folder.childrenFolders;
-    // Check if user can read each folder
-    const foldersFiltered = await Promise.all(
+    const files = folder.files;
+
+    const foldersWithPermissions = await Promise.all(
       folders.map(async (folder) => {
         const access = await this.getRights(user, folder.path);
-        console.log('checking access for folder', folder.path, access);
-        console.log('read access : ', Access.READ);
-        console.log('access : ', access);
-        console.log('access >= Access.READ : ', access >= Access.READ);
-        return access >= Access.READ ? folder : null;
+        if (access >= Access.READ) {
+          const userPermissions = await this.permissionRepository.find({
+            where: { folder },
+            relations: ['user'],
+          });
+          const rolePermissions = await this.permissionRepository.find({
+            where: { folder },
+            relations: ['role'],
+          });
+
+          return {
+            folder,
+            userPermissions: userPermissions
+              .filter((perm) => perm.user)
+              .map((perm) => ({
+                id: perm.id,
+                access: perm.access,
+                user: {
+                  email: perm.user.email,
+                  firstName: perm.user.firstName,
+                  lastName: perm.user.lastName,
+                },
+              })),
+            rolePermissions: rolePermissions
+              .filter((perm) => perm.role)
+              .map((perm) => ({
+                id: perm.id,
+                access: perm.access,
+                role: {
+                  name: perm.role.name,
+                },
+              })),
+          };
+        }
+        return null;
       }),
-    ).then((folders) => folders.filter((folder) => folder !== null));
-    console.log('folders after filter : ', foldersFiltered);
+    ).then((results) => results.filter((result) => result !== null));
 
-    const files = folder.files;
-    console.log('files before filter : ', files);
-
-    // Check if user can read each file
-    const filesFiltered = await Promise.all(
+    const filesWithPermissions = await Promise.all(
       files.map(async (file) => {
         const access = await this.getRights(user, file.path);
-        console.log('checking access for file', file.path, access);
-        console.log('read access : ', Access.READ);
-        console.log('access : ', access);
-        console.log('access >= Access.READ : ', access >= Access.READ);
-        return access >= Access.READ ? file : null;
-      }),
-    ).then((files) => files.filter((file) => file !== null));
-    console.log('files after filter : ', filesFiltered);
+        if (access >= Access.READ) {
+          const userPermissions = await this.permissionRepository.find({
+            where: { file },
+            relations: ['user'],
+          });
+          const rolePermissions = await this.permissionRepository.find({
+            where: { file },
+            relations: ['role'],
+          });
 
-    return { folders: foldersFiltered, files: filesFiltered };
+          return {
+            file,
+            userPermissions: userPermissions
+              .filter((perm) => perm.user)
+              .map((perm) => ({
+                id: perm.id,
+                access: perm.access,
+                user: {
+                  email: perm.user.email,
+                  firstName: perm.user.firstName,
+                  lastName: perm.user.lastName,
+                },
+              })),
+            rolePermissions: rolePermissions
+              .filter((perm) => perm.role)
+              .map((perm) => ({
+                id: perm.id,
+                access: perm.access,
+                role: {
+                  name: perm.role.name,
+                },
+              })),
+          };
+        }
+        return null;
+      }),
+    ).then((results) => results.filter((result) => result !== null));
+
+    return { folders: foldersWithPermissions, files: filesWithPermissions };
   }
 
   async listSubFolders(userId: number, path: string): Promise<Folder[]> {
