@@ -522,6 +522,7 @@ export class GedService {
                 id: perm.id,
                 access: perm.access,
                 user: {
+                  id: perm.user.id,
                   email: perm.user.email,
                   firstName: perm.user.firstName,
                   lastName: perm.user.lastName,
