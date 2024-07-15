@@ -107,6 +107,11 @@ export class GedService {
   async deleteFile(path: string): Promise<void> {
     const file = await this.fileRepository.findOne({ where: { path } });
     if (!file) throw new NotFoundException('File not found');
+
+    const permissions = await this.permissionRepository.find({
+      where: { file },
+    });
+    await this.permissionRepository.remove(permissions);
     await this.fileRepository.remove(file);
 
     // Remove the file from MinIO
@@ -117,6 +122,11 @@ export class GedService {
   async deleteFolder(path: string): Promise<void> {
     const folder = await this.folderRepository.findOne({ where: { path } });
     if (!folder) throw new NotFoundException('Folder not found');
+
+    const permissions = await this.permissionRepository.find({
+      where: { folder },
+    });
+    await this.permissionRepository.remove(permissions);
 
     // Remove files within the folder
     await this.fileRepository
