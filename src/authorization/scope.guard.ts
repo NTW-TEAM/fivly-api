@@ -53,6 +53,11 @@ export class ScopesGuard implements CanActivate {
       const roleScopes = roleEntity.scopes;
       console.log('SCOPES FOR ROLE', role.name);
       console.log(roleScopes);
+      // si l'un des scopes du rôle est SUPER_ADMIN, on autorise l'accès.
+      if (roleScopes.some(scope => scope.name === Scope.SUPER_ADMIN)) {
+        console.log('ROLE HAS SUPER ADMIN SCOPE');
+        return true;
+      }
       allUserScopes = allUserScopes.concat(roleScopes);
     }
     console.log('ALL USER SCOPES :');

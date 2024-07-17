@@ -2,7 +2,7 @@ import { Module, OnModuleInit } from "@nestjs/common";
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
-import { InjectConnection, InjectDataSource, TypeOrmModule } from "@nestjs/typeorm";
+import { InjectDataSource, TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User } from './user/user.entity';
 import { DoesMailExist } from "./user/validator/email.validator";
@@ -22,7 +22,18 @@ import { runSeeder } from "typeorm-extension";
 import { ActivityModule } from './activity/activity.module';
 import SetupSeeder from "../seeders/setup.seed";
 import { ActivityType } from "./activitytypes/activitytype.entity";
+import { Activity } from "./activity/activity.entity";
 import { ActivityTypesModule } from "./activitytypes/activitytypes.module";
+import { LocalsModule } from './locals/locals.module';
+import { Local } from "./locals/local.entity";
+import { JavaAppModule } from './download/javaApp.module';
+import { AssemblyModule } from './assembly/assembly.module';
+import { Assembly } from "./assembly/assembly.entity";
+import { VoteSession } from "./assembly/votesession.entity";
+import { Vote } from "./assembly/vote.entity";
+import { MaterialModule } from './material/material.module';
+import { MaterialModel } from "./material/materialmodel.entity";
+import { Material } from "./material/material.entity";
 
 @Module({
   imports: [
@@ -43,12 +54,13 @@ import { ActivityTypesModule } from "./activitytypes/activitytypes.module";
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         type: 'mysql',
+        timezone: 'Z',
         host: config.get('MYSQL_HOST'),
-        port: +config.get('MYSQL_PORT'), // Le "+" convertit le port en nombre
+        port: 3306, // Le "+" convertit le port en nombre
         username: config.get('MYSQL_USER'),
         password: config.get('MYSQL_PASSWORD'),
         database: config.get('MYSQL_DATABASE'),
-        entities: [User, Scope, Role, Membership, ActivityType],
+        entities: [User, Scope, Role, Membership, ActivityType, Activity, Local, Assembly, VoteSession, Vote, Material, MaterialModel],
         synchronize: config.get('SYNCHRONIZED_DATABASE'),
         logging: config.get('LOGGING_DATABASE'),
         seeds: ['seeders/*.seed.ts'],
@@ -61,6 +73,10 @@ import { ActivityTypesModule } from "./activitytypes/activitytypes.module";
     MembershipModule,
     ActivityTypesModule,
     ActivityModule,
+    LocalsModule,
+    JavaAppModule,
+    AssemblyModule,
+    MaterialModule,
   ],
   controllers: [AppController],
   providers: [AppService, DoesMailExist,

@@ -23,6 +23,8 @@ export default class SetupSeeder implements Seeder {
     await dataSource.query(getRequiredEnvVar('SQL_INSERT_SCOPE_SUPER_ADMIN'));
     await dataSource.query(getRequiredEnvVar('SQL_INSERT_SCOPE_USER_MANAGE'));
     await dataSource.query(getRequiredEnvVar('SQL_INSERT_SCOPE_ROLES_MANAGE'));
+    await dataSource.query(getRequiredEnvVar('SQL_INSERT_SCOPE_LOCALS_MANAGE'));
+    await dataSource.query(getRequiredEnvVar('SQL_INSERT_SCOPE_ASSEMBLIES_MANAGE'));
 
     await dataSource.query(getRequiredEnvVar('SQL_INSERT_ROLE_SCOPES'));
 

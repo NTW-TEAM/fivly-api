@@ -14,6 +14,14 @@ export class AuthGuard implements CanActivate {
     if (request.url === '/auth/login' || request.url === '/users/register') {
       return true;
     }
+
+    const stringUrl = request.url;
+    if (stringUrl.includes('/java-app/download')) {
+      return true;
+    }
+    if(stringUrl.includes('/java-app/checkVersion')) {
+      return true;
+    }
     const token = this.extractTokenFromHeader(request);
     if (!token) {
       throw new UnauthorizedException();
