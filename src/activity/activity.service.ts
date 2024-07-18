@@ -26,7 +26,7 @@ export class ActivityService {
   async getById(id: number): Promise<Activity | null> {
     return await this.activityRepository.findOne({
       where: { id: id },
-      relations: ['participants'],
+      relations: ['participants','materials'],
     });
   }
 
@@ -137,6 +137,7 @@ export class ActivityService {
         'owner.email',
       ])
       .leftJoinAndSelect('activity.participants', 'participants')
+      .leftJoinAndSelect('activity.materials', 'materials')
       .getMany();
   }
 
