@@ -182,7 +182,7 @@ export class ActivityService {
     const user = await this.userRepository.findOneBy({ id: userId });
 
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw new NotFoundException('User not found');
     }
 
     // if user is already registered, throw an error
