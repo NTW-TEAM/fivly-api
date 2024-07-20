@@ -87,6 +87,12 @@ export class ActivityController {
     @Param('activityId') activityId: number,
     @Param('userId') userId: number,
   ): Promise<void> {
+    console.log(
+      'calling registerUserToActivity with activityId: ',
+      activityId,
+      ' and userId: ',
+      userId,
+    );
     return await this.activityService.registerUserToActivity(
       activityId,
       userId,

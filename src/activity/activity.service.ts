@@ -175,14 +175,9 @@ export class ActivityService {
     });
 
     if (!activity) {
-      throw new BadRequestException('Activity not found');
+      throw new NotFoundException('Activity not found');
     }
-    console.log(activity.participants);
-
-    // if user is already registered, throw an error
-    if (activity.participants.some((p) => p.id == userId)) {
-      throw new ConflictException('User already registered');
-    }
+    console.log('participants before adding :', activity.participants);
 
     const user = await this.userRepository.findOneBy({ id: userId });
 
@@ -190,7 +185,13 @@ export class ActivityService {
       throw new BadRequestException('User not found');
     }
 
+    // if user is already registered, throw an error
+    if (activity.participants.some((p) => p.id == userId)) {
+      throw new ConflictException('User already registered');
+    }
+
     activity.participants = [...activity.participants, user];
+    console.log('participants to be saved :', activity.participants);
     await this.activityRepository.save(activity);
   }
 
