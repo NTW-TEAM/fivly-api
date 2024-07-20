@@ -104,6 +104,7 @@ export class GiveService {
           'crowdfunding.actualAmount before : ',
           crowdfunding.actualAmount,
         );
+        crowdfunding.actualAmount = Number(crowdfunding.actualAmount);
         crowdfunding.actualAmount += amount;
         console.log(
           'crowdfunding.actualAmount after : ',
