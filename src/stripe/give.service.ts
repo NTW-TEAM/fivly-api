@@ -73,7 +73,7 @@ export class GiveService {
       );
       console.log('Payment intent in webhook : ', paymentIntent);
       console.log('PaymentIntent amount : ', paymentIntent.amount);
-      const amount = paymentIntent.amount / 100; // amount in cents
+      const amount: number = paymentIntent.amount / 100; // amount in cents
       console.log('const amount (paymentIntent.amount / 100): ', amount);
       if (!session.metadata) {
         console.log('No metadata in session');
@@ -100,7 +100,15 @@ export class GiveService {
         await this.giveRepository.save(give);
 
         // Update the actual amount in the crowdfunding project
+        console.log(
+          'crowdfunding.actualAmount before : ',
+          crowdfunding.actualAmount,
+        );
         crowdfunding.actualAmount += amount;
+        console.log(
+          'crowdfunding.actualAmount after : ',
+          crowdfunding.actualAmount,
+        );
         await this.crowdfundingRepository.save(crowdfunding);
       }
     }
