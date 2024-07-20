@@ -77,7 +77,9 @@ export class ActivityService {
     // all fields of searchActivityDto are optional
     // if no field is provided, return all activities
     if (Object.keys(searchActivityDto).length === 0) {
-      return await this.activityRepository.find();
+      return await this.activityRepository.find({
+        relations: ['activityType', 'participants', 'materials'],
+      });
     }
 
     // check activityType and owner
