@@ -19,10 +19,10 @@ export class Crowdfunding {
   @Column('text')
   description: string;
 
-  @Column('decimal')
+  @Column('decimal', { precision: 10, scale: 2 })
   goalAmount: number;
 
-  @Column('decimal')
+  @Column('decimal', { precision: 10, scale: 2 })
   actualAmount: number;
 
   @Column()
