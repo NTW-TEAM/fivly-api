@@ -210,11 +210,11 @@ export class MaterialService {
       throw new NotFoundException('Material or Activity not found');
     }
 
-    console.log('material activities before');
+    console.log('material activities before', material.activities);
     material.activities = material.activities.filter(
       (act) => act.id !== activityId,
     );
-    console.log('material activities after');
+    console.log('material activities after', material.activities);
     await this.materialRepository.save(material);
   }
 
