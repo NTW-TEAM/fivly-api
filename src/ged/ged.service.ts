@@ -445,8 +445,9 @@ export class GedService {
     // Vérifier les permissions pour le fichier ou le dossier et retourner l'accès le plus élevé
     const permissionsForPath = allPermissions.filter(
       (p) =>
-        (p.file && p.file.path === path) ||
-        (p.folder && p.folder.path === path),
+        ((p.file && p.file.path === path) ||
+          (p.folder && p.folder.path === path)) &&
+        p.access >= Access.NONE,
     );
     console.log('after filter, permissionsForPath : ', permissionsForPath);
 
