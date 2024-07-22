@@ -1,4 +1,9 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Material } from './material.entity';
@@ -202,17 +207,14 @@ export class MaterialService {
     });
 
     if (!material || !activity) {
-      throw new HttpException(
-        'Material or Activity not found',
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException('Material or Activity not found');
     }
 
-    console.log('material activites before');
+    console.log('material activities before');
     material.activities = material.activities.filter(
       (act) => act.id !== activityId,
     );
-    console.log('material activites after');
+    console.log('material activities after');
     await this.materialRepository.save(material);
   }
 
