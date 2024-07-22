@@ -629,4 +629,17 @@ export class GedService {
     const file = await this.fileRepository.findOne({ where: { path } });
     return file !== null;
   }
+
+  async getCurrentFolderUserAccess(
+    userId: number,
+    path: string,
+  ): Promise<{ requesterAccess: Access }> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+    const folder = await this.folderRepository.findOne({
+      where: { path },
+    });
+    if (!folder) throw new NotFoundException('Folder not found');
+    return { requesterAccess: await this.getRights(user, path) };
+  }
 }

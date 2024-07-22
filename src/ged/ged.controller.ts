@@ -10,14 +10,15 @@ import {
   UseInterceptors,
   NotFoundException,
   Query,
-  Request, UseGuards
-} from "@nestjs/common";
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { GedService } from './ged.service';
 import { Access } from './permission.entity';
 import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
-import { ManageAccessGuard } from "./guard/ged.guard";
+import { ManageAccessGuard } from './guard/ged.guard';
 
 const storage = multer.memoryStorage();
 
@@ -143,6 +144,14 @@ export class GedController {
   @Post('folder/contents')
   async listFolderContents(@Body('path') path: string, @Request() req: any) {
     return this.gedService.listFolderContents(req.user.id, path);
+  }
+
+  @Post('folder/current')
+  async getCurrentFolderUserAccess(
+    @Body('path') path: string,
+    @Request() req: any,
+  ) {
+    return this.gedService.getCurrentFolderUserAccess(req.user.id, path);
   }
 
   // WORKS WELL
