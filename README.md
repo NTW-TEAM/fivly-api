@@ -49,16 +49,6 @@ MINIO_BUCKET_NAME=fivly # Nom du bucket interne Minio
 MINIO_FIRST_PORT=9000 # Port de Minio pour l'interface web
 MINIO_SECOND_PORT=9001 # Port de Minio pour l'API
 MINIO_ENDPOINT=fivly-minio # Nom du service Minio
-
-# Scripts d'initialisation de la base de données
-SQL_INSERT_ROLE_MEMBER="INSERT INTO role (name, description) VALUES ('member', 'Utilisateur par défaut');"
-SQL_INSERT_ROLE_ADMIN="INSERT INTO role (name, description) VALUES ('admin', 'Administrateur');"
-SQL_INSERT_SCOPE_SUPER_ADMIN="INSERT INTO scope (name, description) VALUES ('super:admin', 'Donne tous les droits');"
-SQL_INSERT_SCOPE_USER_MANAGE="INSERT INTO scope (name, description) VALUES ('user:manage', 'Gérer les utilisateurs');"
-SQL_INSERT_SCOPE_ROLES_MANAGE="INSERT INTO scope (name, description) VALUES ('roles:manage', 'Gérer les rôles');"
-SQL_INSERT_SCOPE_LOCALS_MANAGE="INSERT INTO scope (name, description) VALUES ('locals:manage', 'Gérer les locaux');"
-SQL_INSERT_SCOPE_ASSEMBLIES_MANAGE="INSERT INTO scope (name, description) VALUES ('assemblies:manage', 'Gérer les assemblées');"
-SQL_INSERT_ROLE_SCOPES="INSERT INTO role_scopes_scope VALUES ('admin', 'super:admin');"
 ```
 
 ### Lancer le projet avec Docker Compose

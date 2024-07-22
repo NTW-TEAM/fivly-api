@@ -21,27 +21,31 @@ export default class SetupSeeder implements Seeder {
       "INSERT INTO folder (id, name, path) VALUES (1, '','/')",
     );
 
-    await dataSource.query(getRequiredEnvVar('SQL_INSERT_ROLE_MEMBER'));
-    await dataSource.query(getRequiredEnvVar('SQL_INSERT_ROLE_ADMIN'));
-
-    await dataSource.query(getRequiredEnvVar('SQL_INSERT_SCOPE_SUPER_ADMIN'));
-    await dataSource.query(getRequiredEnvVar('SQL_INSERT_SCOPE_USER_MANAGE'));
-    await dataSource.query(getRequiredEnvVar('SQL_INSERT_SCOPE_ROLES_MANAGE'));
-    await dataSource.query(getRequiredEnvVar('SQL_INSERT_SCOPE_LOCALS_MANAGE'));
     await dataSource.query(
-      getRequiredEnvVar('SQL_INSERT_SCOPE_ASSEMBLIES_MANAGE'),
+      "INSERT INTO role (name, description) VALUES ('member', 'Utilisateur par défaut');",
+    );
+    await dataSource.query(
+      "INSERT INTO role (name, description) VALUES ('admin', 'Administrateur');",
     );
 
-    await dataSource.query(getRequiredEnvVar('SQL_INSERT_ROLE_SCOPES'));
+    await dataSource.query(
+      "INSERT INTO scope (name, description) VALUES ('super:admin', 'Donne tous les droits');",
+    );
+    await dataSource.query(
+      "INSERT INTO scope (name, description) VALUES ('user:manage', 'Gérer les utilisateurs');",
+    );
+    await dataSource.query(
+      "INSERT INTO scope (name, description) VALUES ('roles:manage', 'Gérer les rôles');",
+    );
+    await dataSource.query(
+      "INSERT INTO scope (name, description) VALUES ('locals:manage', 'Gérer les locaux');",
+    );
+    await dataSource.query(
+      "INSERT INTO scope (name, description) VALUES ('assemblies:manage', 'Gérer les assemblées');",
+    );
 
-    await dataSource.query(getRequiredEnvVar('SQL_INSERT_USER_1'));
-    await dataSource.query(getRequiredEnvVar('SQL_INSERT_USER_2'));
-    await dataSource.query(getRequiredEnvVar('SQL_INSERT_USER_3'));
-    await dataSource.query(getRequiredEnvVar('SQL_INSERT_USER_4'));
-
-    await dataSource.query(getRequiredEnvVar('SQL_INSERT_USER_ROLES_1'));
-    await dataSource.query(getRequiredEnvVar('SQL_INSERT_USER_ROLES_2'));
-    await dataSource.query(getRequiredEnvVar('SQL_INSERT_USER_ROLES_3'));
-    await dataSource.query(getRequiredEnvVar('SQL_INSERT_USER_ROLES_4'));
+    await dataSource.query(
+      "INSERT INTO role_scopes_scope VALUES ('admin', 'super:admin');",
+    );
   }
 }
