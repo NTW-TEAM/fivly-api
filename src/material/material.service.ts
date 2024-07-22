@@ -208,9 +208,11 @@ export class MaterialService {
       );
     }
 
+    console.log('material activites before');
     material.activities = material.activities.filter(
       (act) => act.id !== activityId,
     );
+    console.log('material activites after');
     await this.materialRepository.save(material);
   }
 
