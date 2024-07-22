@@ -634,7 +634,10 @@ export class GedService {
     userId: number,
     path: string,
   ): Promise<{ requesterAccess: Access }> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['roles'],
+    });
     if (!user) throw new NotFoundException('User not found');
     const folder = await this.folderRepository.findOne({
       where: { path },
