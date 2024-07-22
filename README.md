@@ -5,7 +5,7 @@
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
+  <p align="center">Nest.js. A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
     <p align="center">
 <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
 <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
@@ -22,52 +22,51 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
+
+# FIVLY-API
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Ce projet comprend l'API complète pour gérer votre association loi 1901. 
+Il est basé sur le framework NestJS et utilise une base de données PostgreSQL, un Object Storage S3 Minio, et comprend un PHPMyAdmin en cas de besoin.
 
 ## Installation
 
-```bash
-$ npm install
+### Ajouter un fichier .env à la racine du projet
+```dotenv
+MYSQL_ROOT_PASSWORD=mysql_root_password # Mot de passe root de la base de données
+MYSQL_DATABASE=mysql_database # Nom de la base de données
+MYSQL_USER=mysql_user # Nom d'utilisateur de la base de données
+MYSQL_PASSWORD=mysql_password # Mot de passe de l'utilisateur de la base de données
+MYSQL_PORT=3306 # Port de la base de données
+PMA_PORT=8047 # Port de PHPMyAdmin
+API_PORT=3000 # Port de l'API
+JWT_SECRET=jwt_secret # Clé secrète pour les tokens JWT
+SYNCHRONIZED_DATABASE=true # Synchroniser la base de données à chaque démarrage
+LOGGING_DATABASE=true # Afficher les logs de la base de données
+MINIO_ROOT_USER=root # Nom de l'utilisateur root de Minio
+MINIO_ROOT_PASSWORD=password # Mot de passe de l'utilisateur root de Minio
+MINIO_BUCKET_NAME=fivly # Nom du bucket interne Minio
+MINIO_FIRST_PORT=9000 # Port de Minio pour l'interface web
+MINIO_SECOND_PORT=9001 # Port de Minio pour l'API
+MINIO_ENDPOINT=fivly-minio # Nom du service Minio
+
+# Scripts d'initialisation de la base de données
+SQL_INSERT_ROLE_MEMBER="INSERT INTO role (name, description) VALUES ('member', 'Utilisateur par défaut');"
+SQL_INSERT_ROLE_ADMIN="INSERT INTO role (name, description) VALUES ('admin', 'Administrateur');"
+SQL_INSERT_SCOPE_SUPER_ADMIN="INSERT INTO scope (name, description) VALUES ('super:admin', 'Donne tous les droits');"
+SQL_INSERT_SCOPE_USER_MANAGE="INSERT INTO scope (name, description) VALUES ('user:manage', 'Gérer les utilisateurs');"
+SQL_INSERT_SCOPE_ROLES_MANAGE="INSERT INTO scope (name, description) VALUES ('roles:manage', 'Gérer les rôles');"
+SQL_INSERT_SCOPE_LOCALS_MANAGE="INSERT INTO scope (name, description) VALUES ('locals:manage', 'Gérer les locaux');"
+SQL_INSERT_SCOPE_ASSEMBLIES_MANAGE="INSERT INTO scope (name, description) VALUES ('assemblies:manage', 'Gérer les assemblées');"
+SQL_INSERT_ROLE_SCOPES="INSERT INTO role_scopes_scope VALUES ('admin', 'super:admin');"
 ```
 
-## Running the app
+### Lancer le projet avec Docker Compose
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+$ docker compose up --env-file .env -d
 ```
 
-## Test
+Et voilà, tout est prêt, lancez maintenant votre website pour initialiser le projet.
 
-```bash
-# unit tests
-$ npm run test
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
