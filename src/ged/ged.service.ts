@@ -440,6 +440,7 @@ export class GedService {
     }
 
     const allPermissions = userPermissions.concat(rolePermissions);
+    console.log('allpermisions for path : ', allPermissions);
 
     // Vérifier les permissions pour le fichier ou le dossier et retourner l'accès le plus élevé
     const permissionsForPath = allPermissions.filter(
@@ -447,8 +448,10 @@ export class GedService {
         (p.file && p.file.path === path) ||
         (p.folder && p.folder.path === path),
     );
+    console.log('after filter, permissionsForPath : ', permissionsForPath);
 
     if (permissionsForPath.length > 0) {
+      console.log('permissions found for path : ', path);
       return permissionsForPath.reduce(
         (max, p) => (p.access > max ? p.access : max),
         Access.NONE,
