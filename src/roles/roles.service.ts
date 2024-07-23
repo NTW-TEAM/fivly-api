@@ -8,12 +8,15 @@ import { NotFoundError } from 'rxjs';
 import { UpdateScopesDTO } from '../user/dto/update.scopes.dto';
 import { User } from '../user/user.entity';
 import { ScopeService } from '../scope/scope.service';
+import { Permission } from '../ged/permission.entity';
 
 @Injectable()
 export class RolesService {
   constructor(
     @InjectRepository(Role) private roleRepository: Repository<Role>,
     @InjectRepository(Scope) private scopeRepository: Repository<Scope>,
+    @InjectRepository(Permission)
+    private permissionRepository: Repository<Permission>,
     private scopeService: ScopeService,
   ) {}
 
@@ -65,6 +68,15 @@ export class RolesService {
     if (!role) {
       throw new HttpException('Role not found', HttpStatus.NOT_FOUND);
     }
+
+    // check and delete file permissions
+    const permissions = await this.permissionRepository.find({
+      where: { role: { name } },
+    });
+    if (permissions.length > 0) {
+      await this.permissionRepository.remove(permissions);
+    }
+
     await this.roleRepository.delete({ name: name });
   }
 

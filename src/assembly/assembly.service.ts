@@ -50,6 +50,26 @@ export class AssemblyService {
   }
 
   async deleteAssembly(id: number): Promise<void> {
+    // check and delete participants
+    const assembly = await this.assemblyRepository.findOne({
+      where: { id },
+      relations: ['participants'],
+    });
+    if (!assembly) {
+      throw new NotFoundException(`Assembly with ID ${id} not found`);
+    }
+
+    assembly.participants = [];
+    await this.assemblyRepository.save(assembly);
+
+    // check and delete voteSessions
+    const voteSessions = await this.voteSessionRepository.find({
+      where: { assembly: { id } },
+    });
+    if (voteSessions.length > 0) {
+      await this.voteSessionRepository.remove(voteSessions);
+    }
+
     const result = await this.assemblyRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`Assembly with ID ${id} not found`);

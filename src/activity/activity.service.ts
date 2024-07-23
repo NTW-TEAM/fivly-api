@@ -26,7 +26,7 @@ export class ActivityService {
   async getById(id: number): Promise<Activity | null> {
     return await this.activityRepository.findOne({
       where: { id: id },
-      relations: ['participants','materials'],
+      relations: ['participants', 'materials'],
     });
   }
 
