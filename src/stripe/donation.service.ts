@@ -95,7 +95,7 @@ export class DonationService {
   async getStripeClient() {
     const association = await this.associationService.get();
     return new Stripe(association.stripeKey, {
-      apiVersion: '2024-04-10',
+      apiVersion: '2024-06-20',
     });
   }
 }
