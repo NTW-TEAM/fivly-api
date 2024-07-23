@@ -27,8 +27,11 @@ export class DonationService {
       }
       user = tempUser;
     }
+    console.log('getting stripe client');
     const stripe = await this.getStripeClient();
+    console.log('getting association');
     const association = await this.associationService.get();
+    console.log('creating stripe session');
     const session = await stripe.checkout.sessions.create({
       line_items: [
         {
@@ -51,6 +54,7 @@ export class DonationService {
       customer_email: user ? user.email : undefined,
     });
 
+    console.log('Session : ', session);
     return session.url;
   }
 
